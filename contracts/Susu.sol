@@ -3,10 +3,10 @@ pragma solidity ^0.4.22;
 // API Design here: https://docs.google.com/presentation/d/12qfLPD88TTfvQxWLRTu5boEav8-JdRf3IjpS5WNDTvs/edit#slide=id.g3cb5a7885c_0_11
 // Design Requirements here: https://docs.google.com/document/d/1myfOSSwCPx16uUMSLbtf5RvfLFN97vmkKxjFWIvAaEM/edit
 contract Susu {
-    address owner;
+    address public owner;
     uint8 public groupSize;
     uint256 public contribAmtWei;
-    address[] members;
+    address[] public members;
     mapping(address => uint) currentContributions;
 
     constructor() public payable {
@@ -21,6 +21,7 @@ contract Susu {
             0xE6C22AD8aEB3571d37A87a8C9743d90A4b944884,
             0xA363AC0Df8b8B996BA793A1F244D5C499Ae006b4
         ];
+        owner = members[1];
         currentContributions[members[0]] = 10000000000000000;
         currentContributions[members[1]] = 10000000000000000;
         currentContributions[members[3]] = 2500000000000000;
@@ -47,8 +48,12 @@ contract Susu {
         return contribAmtWei;
     }
 
-    function getMembers() public view returns(address[]) {
-        return members;
+    function getManyMembers() public view returns(uint256) {
+        return members.length;
+    }
+
+    function getMemberAtIndex(uint8 index) public view returns(address) {
+        return members[index];
     }
 
     function getCurrentContribution(address _member) public view returns(uint256) {

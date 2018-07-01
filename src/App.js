@@ -17,6 +17,8 @@ class App extends Component {
       web3: null,
       contribAmt: 0,
       groupSize: 0,
+      members: [],
+      owner: '0x0',
     }
   }
 
@@ -45,10 +47,30 @@ class App extends Component {
     susu.setProvider(this.state.web3.currentProvider);
 
     susu.deployed().then((instance) => {
+      return instance.getManyMembers.call();
+    }).then((result) => {
+      let getManyMembers = (new BigNumber(result)).toNumber();
+      for(let i=0; i<getManyMembers; i++) {
+        susu.deployed().then((instance) => {
+          return instance.getMemberAtIndex.call(i);
+        }).then((result) => {
+          this.setState({
+            members: [...this.state.members, result]
+          })
+          return [];
+        }).catch(function(err) {
+          console.error('getMembers error:', err.message);
+        });
+      }
+    }).catch(function(err) {
+      console.error('groupSize error:', err.message);
+    });
+
+    susu.deployed().then((instance) => {
       return instance.groupSize.call();
     }).then((result) => {
-      // console.log('groupSize result:', result);
-      return this.setState({ groupSize: result.c[0] })
+      let groupSize = (new BigNumber(result)).toNumber();
+      return this.setState({ groupSize: groupSize });
     }).catch(function(err) {
       console.error('groupSize error:', err.message);
     });
@@ -61,6 +83,14 @@ class App extends Component {
       return this.setState({ contribAmt: contribAmt});
     }).catch(function(err) {
       console.error('contribAmt error:', err.message);
+    });
+
+    susu.deployed().then((instance) => {
+      return instance.owner.call();
+    }).then((result) => {
+      return this.setState({ owner: result});
+    }).catch(function(err) {
+      console.error('owner error:', err.message);
     });
 
     // const simpleStorage = contract(SimpleStorageContract);
@@ -87,6 +117,13 @@ class App extends Component {
   }
 
   render() {
+    let membersRows = this.state.members.map((member) =>
+      <tr id="memberTemplate" key={member}>
+        <td>{(this.state.owner===member) ? 'Owner' : ''}</td>
+        <td>{member}</td>
+        <td></td>
+      </tr>
+    );
     return (
       <div className="App">
         <nav className="navbar pure-menu pure-menu-horizontal">
@@ -116,11 +153,7 @@ class App extends Component {
                     <th>Address</th>
                     <th>Contribution</th>
                   </tr>
-                  <tr id="memberTemplate" style={{display:'none'}}>
-                    <td className="member-role"></td>
-                    <td className="member-address"></td>
-                    <td className="member-contribution"></td>
-                  </tr>
+                  {membersRows}
                 </tbody>
               </table>
             </div>
