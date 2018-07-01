@@ -53,11 +53,22 @@ class App extends Component {
       for(let i=0; i<getManyMembers; i++) {
         susu.deployed().then((instance) => {
           return instance.getMemberAtIndex.call(i);
-        }).then((result) => {
-          this.setState({
-            members: [...this.state.members, result]
+        }).then((memberAddress) => {
+          const members = this.state.members;
+          let memberObj = members[memberAddress];
+          if(typeof memberObj === undefined) {
+            members[memberAddress] = {address:memberAddress, contribution:0.0};
+          }
+          this.setState({members: members});
+          return memberAddress;
+        }).then((memberAddress) => {
+          susu.deployed().then((instance) => {
+            return instance.getContributionForMember.call(memberAddress);
+          }).then((contribution) => {
+            const members = this.state.members;
+            let memberObj = members[memberAddress];
+            memberObj['contribution'] = contribution;
           })
-          return [];
         }).catch(function(err) {
           console.error('getMembers error:', err.message);
         });

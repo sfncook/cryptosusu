@@ -56,7 +56,7 @@ contract Susu {
         return members[index];
     }
 
-    function getCurrentContribution(address _member) public view returns(uint256) {
+    function getContributionForMember(address _member) public view returns(uint256) {
         return currentContributions[_member];
     }
 
