@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
-// import SimpleStorageContract from '../build/contracts/SimpleStorage.json'
+
 import SusuContract from '../build/contracts/Susu.json'
 import getWeb3 from './utils/getWeb3'
+import {BigNumber} from 'bignumber.js';
 
 import './css/oswald.css'
 import './css/open-sans.css'
 import './css/pure-min.css'
 import './App.css'
-import {BigNumber} from 'bignumber.js';
 
 class App extends Component {
   constructor(props) {
@@ -15,6 +15,7 @@ class App extends Component {
 
     this.state = {
       web3: null,
+      myAddress: '',
       contribAmt: 0,
       groupSize: 0,
       member0Address: '',
@@ -30,9 +31,6 @@ class App extends Component {
   }
 
   componentWillMount() {
-    // Get network provider and web3 instance.
-    // See utils/getWeb3 for more info.
-
     getWeb3
     .then(results => {
       this.setState({
@@ -49,6 +47,11 @@ class App extends Component {
 
   instantiateContract() {
     const contract = require('truffle-contract');
+
+    let _this = this;
+    this.state.web3.eth.getAccounts(function(error, accounts) {
+      _this.setState({myAddress: accounts[0]});
+    });
 
     const susu = contract(SusuContract);
     susu.setProvider(this.state.web3.currentProvider);
@@ -127,14 +130,6 @@ class App extends Component {
   }
 
   render() {
-    // console.log(`this.state.members:${this.state.members}`);
-    // let membersRows = this.state.members.map((member) =>
-    //   <tr id="memberTemplate" key={member.address}>
-    //     <td>{(this.state.owner===member.address) ? 'Owner' : ''}</td>
-    //     <td>{member.address}</td>
-    //     <td></td>
-    //   </tr>
-    // );
     return (
       <div className="App">
         <nav className="navbar pure-menu pure-menu-horizontal">
@@ -164,28 +159,28 @@ class App extends Component {
                     <th>Address</th>
                     <th>Contribution</th>
                   </tr>
-                  <tr id="member0">
+                  <tr id="member0" className={(this.state.myAddress===this.state.member0Address?'tr-my-account':'')}>
                     <td>{(this.state.owner===this.state.member0Address) ? 'Owner' : ''}</td>
                     <td>{this.state.member0Address}</td>
                     <td className={this.getTdContribColor(this.state.member0Contrib)}>
                       {this.state.member0Contrib} ether
                     </td>
                   </tr>
-                  <tr id="member1">
+                  <tr id="member1" className={(this.state.myAddress===this.state.member1Address?'tr-my-account':'')}>
                     <td>{(this.state.owner===this.state.member1Address) ? 'Owner' : ''}</td>
                     <td>{this.state.member1Address}</td>
                     <td className={this.getTdContribColor(this.state.member1Contrib)}>
                       {this.state.member1Contrib} ether
                     </td>
                   </tr>
-                  <tr id="member2">
+                  <tr id="member2" className={(this.state.myAddress===this.state.member2Address?'tr-my-account':'')}>
                     <td>{(this.state.owner===this.state.member2Address) ? 'Owner' : ''}</td>
                     <td>{this.state.member2Address}</td>
                     <td className={this.getTdContribColor(this.state.member2Contrib)}>
                       {this.state.member2Contrib} ether
                     </td>
                   </tr>
-                  <tr id="member3">
+                  <tr id="member3" className={(this.state.myAddress===this.state.member3Address?'tr-my-account':'')}>
                     <td>{(this.state.owner===this.state.member3Address) ? 'Owner' : ''}</td>
                     <td>{this.state.member3Address}</td>
                     <td className={this.getTdContribColor(this.state.member3Contrib)}>
