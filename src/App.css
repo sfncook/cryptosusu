@@ -91,3 +91,14 @@ code {
   margin: 10px;
 }
 
+.td-contrib-green {
+  background-color: lightgreen;
+}
+
+.td-contrib-yellow {
+  background-color: yellow;
+}
+
+.td-contrib-red {
+  background-color: pink;
+}
