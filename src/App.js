@@ -9,7 +9,10 @@ import './css/open-sans.css'
 import './css/pure-min.css'
 import './App.css'
 
+let contractInstance;
+
 class App extends Component {
+
   constructor(props) {
     super(props);
 
@@ -56,7 +59,6 @@ class App extends Component {
     const susu = contract(SusuContract);
     susu.setProvider(this.state.web3.currentProvider);
 
-    let contractInstance;
     susu.deployed().then((instance) => {
       contractInstance = instance;
       contractInstance.getMemberAtIndex.call(0).then((memberAddress)=>{
@@ -191,9 +193,9 @@ class App extends Component {
               </table>
             </div>
             <div className="pure-u-1-1">
-              <button className="btn-contribute" type="button" data-id="0">Contribute</button>
-              <button className="btn-leave" type="button" data-id="0">Leave Group</button>
-              <button className={(this.isOwner(this.state.myAddress))?'btn-pay':'btn-disabled'} type="button" data-id="0" disabled={!this.isOwner(this.state.myAddress)}>Pay Out</button>
+              <button onClick={(e)=>{this.clickContribute(e)}} className="btn-contribute" type="button" data-id="0">Contribute</button>
+              <button onClick={(e)=>{this.clickLeave(e)}} className="btn-leave" type="button" data-id="0">Leave Group</button>
+              <button onClick={(e)=>{this.clickPayOut(e)}} className={(this.isOwner(this.state.myAddress))?'btn-pay':'btn-disabled'} type="button" data-id="0" disabled={!this.isOwner(this.state.myAddress)}>Pay Out</button>
             </div>
           </div>
         </main>
@@ -213,6 +215,21 @@ class App extends Component {
 
   isOwner(memberAddress) {
     return memberAddress === this.state.owner;
+  }
+
+  clickContribute(e) {
+    e.preventDefault();
+    console.log('contribute clicked');
+  }
+
+  clickLeave(e) {
+    e.preventDefault();
+    console.log('leave clicked');
+  }
+
+  clickPayOut(e) {
+    e.preventDefault();
+    console.log('payout clicked');
   }
 
 }
