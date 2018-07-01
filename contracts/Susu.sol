@@ -5,7 +5,7 @@ pragma solidity ^0.4.22;
 contract Susu {
     address owner;
     uint8 public groupSize;
-    uint256 contribAmtWei;
+    uint256 public contribAmtWei;
     address[] members;
     mapping(address => uint) currentContributions;
 

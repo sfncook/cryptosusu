@@ -7,14 +7,16 @@ import './css/oswald.css'
 import './css/open-sans.css'
 import './css/pure-min.css'
 import './App.css'
+import {BigNumber} from 'bignumber.js';
 
 class App extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      storageValue: 0,
-      web3: null
+      web3: null,
+      contribAmt: 0,
+      groupSize: 0,
     }
   }
 
@@ -45,10 +47,20 @@ class App extends Component {
     susu.deployed().then((instance) => {
       return instance.groupSize.call();
     }).then((result) => {
-      // console.log('result:', result);
+      // console.log('groupSize result:', result);
       return this.setState({ groupSize: result.c[0] })
     }).catch(function(err) {
-      console.error('error:', err.message);
+      console.error('groupSize error:', err.message);
+    });
+
+    susu.deployed().then((instance) => {
+      return instance.contribAmtWei.call();
+    }).then((result) => {
+      let bigNumber = new BigNumber(result);
+      let contribAmt = this.state.web3.fromWei(bigNumber, 'ether').toNumber();
+      return this.setState({ contribAmt: contribAmt});
+    }).catch(function(err) {
+      console.error('contribAmt error:', err.message);
     });
 
     // const simpleStorage = contract(SimpleStorageContract);
@@ -90,6 +102,10 @@ class App extends Component {
                   <th>Group Size:</th>
                   <td>{this.state.groupSize}</td>
                 </tr>
+                <tr id="memberTemplate">
+                  <th>Contribution Amt:</th>
+                  <td>{this.state.contribAmt}</td>
+                </tr>
                 </tbody>
               </table>
 
@@ -107,11 +123,6 @@ class App extends Component {
                   </tr>
                 </tbody>
               </table>
-              {/*<p>Your Truffle Box is installed and ready.</p>*/}
-              {/*<h2>Smart Contract Example</h2>*/}
-              {/*<p>If your contracts compiled and migrated successfully, below will show a stored value of 5 (by default).</p>*/}
-              {/*<p>Try changing the value stored on <strong>line 59</strong> of App.js.</p>*/}
-              {/*<p>The stored value is: {this.state.storageValue}</p>*/}
             </div>
           </div>
         </main>
