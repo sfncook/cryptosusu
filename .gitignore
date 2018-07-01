@@ -1,0 +1,4 @@
+.idea
+build/contracts/*
+node_modules
+package-lock.json
