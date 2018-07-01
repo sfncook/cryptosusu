@@ -160,28 +160,28 @@ class App extends Component {
                     <th>Contribution</th>
                   </tr>
                   <tr id="member0" className={(this.state.myAddress===this.state.member0Address?'tr-my-account':'')}>
-                    <td>{(this.state.owner===this.state.member0Address) ? 'Owner' : ''}</td>
+                    <td>{this.isOwner(this.state.member0Address) ? 'Owner' : ''}</td>
                     <td>{this.state.member0Address}</td>
                     <td className={this.getTdContribColor(this.state.member0Contrib)}>
                       {this.state.member0Contrib} ether
                     </td>
                   </tr>
                   <tr id="member1" className={(this.state.myAddress===this.state.member1Address?'tr-my-account':'')}>
-                    <td>{(this.state.owner===this.state.member1Address) ? 'Owner' : ''}</td>
+                    <td>{this.isOwner(this.state.member1Address) ? 'Owner' : ''}</td>
                     <td>{this.state.member1Address}</td>
                     <td className={this.getTdContribColor(this.state.member1Contrib)}>
                       {this.state.member1Contrib} ether
                     </td>
                   </tr>
                   <tr id="member2" className={(this.state.myAddress===this.state.member2Address?'tr-my-account':'')}>
-                    <td>{(this.state.owner===this.state.member2Address) ? 'Owner' : ''}</td>
+                    <td>{this.isOwner(this.state.member2Address) ? 'Owner' : ''}</td>
                     <td>{this.state.member2Address}</td>
                     <td className={this.getTdContribColor(this.state.member2Contrib)}>
                       {this.state.member2Contrib} ether
                     </td>
                   </tr>
                   <tr id="member3" className={(this.state.myAddress===this.state.member3Address?'tr-my-account':'')}>
-                    <td>{(this.state.owner===this.state.member3Address) ? 'Owner' : ''}</td>
+                    <td>{this.isOwner(this.state.member3Address) ? 'Owner' : ''}</td>
                     <td>{this.state.member3Address}</td>
                     <td className={this.getTdContribColor(this.state.member3Contrib)}>
                       {this.state.member3Contrib} ether
@@ -189,6 +189,11 @@ class App extends Component {
                   </tr>
                 </tbody>
               </table>
+            </div>
+            <div className="pure-u-1-1">
+              <button className="btn-contribute" type="button" data-id="0">Contribute</button>
+              <button className="btn-leave" type="button" data-id="0">Leave Group</button>
+              <button className={(this.isOwner(this.state.myAddress))?'btn-pay':'btn-disabled'} type="button" data-id="0" disabled={!this.isOwner(this.state.myAddress)}>Pay Out</button>
             </div>
           </div>
         </main>
@@ -205,6 +210,11 @@ class App extends Component {
       return 'td-contrib-red';
     }
   }
+
+  isOwner(memberAddress) {
+    return memberAddress === this.state.owner;
+  }
+
 }
 
 export default App

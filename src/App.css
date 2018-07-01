@@ -106,3 +106,23 @@ code {
 .tr-my-account {
   border: 6px solid deepskyblue;
 }
+
+.btn-contribute {
+  background-color: lightgreen;
+}
+
+.btn-leave {
+  background-color: pink;
+}
+
+.btn-pay {
+  background-color: lightgreen;
+}
+
+.btn-disabled {
+  background-color: lightgray;
+}
+
+button {
+  margin: 5px;
+}
