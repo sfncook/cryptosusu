@@ -45,7 +45,8 @@ class App extends Component {
     susu.deployed().then((instance) => {
       return instance.groupSize.call();
     }).then((result) => {
-      console.log('result:', result);
+      // console.log('result:', result);
+      return this.setState({ groupSize: result.c[0] })
     }).catch(function(err) {
       console.error('error:', err.message);
     });
@@ -77,13 +78,35 @@ class App extends Component {
     return (
       <div className="App">
         <nav className="navbar pure-menu pure-menu-horizontal">
-            <a href="#" className="pure-menu-heading pure-menu-link">Truffle Box</a>
+            <a href="#" className="pure-menu-heading pure-menu-link">Crypto Susu</a>
         </nav>
 
         <main className="container">
           <div className="pure-g">
-            <div className="pure-u-1-1">
-              <h1>Good to Go!</h1>
+            <div className="pure-u-1-1" style={{paddingTop:'15px'}}>
+              <table className="groupTable">
+                <tbody>
+                <tr id="memberTemplate">
+                  <th>Group Size:</th>
+                  <td>{this.state.groupSize}</td>
+                </tr>
+                </tbody>
+              </table>
+
+              <table className="memberTable">
+                <tbody>
+                  <tr>
+                    <th>Role</th>
+                    <th>Address</th>
+                    <th>Contribution</th>
+                  </tr>
+                  <tr id="memberTemplate" style={{display:'none'}}>
+                    <td className="member-role"></td>
+                    <td className="member-address"></td>
+                    <td className="member-contribution"></td>
+                  </tr>
+                </tbody>
+              </table>
               {/*<p>Your Truffle Box is installed and ready.</p>*/}
               {/*<h2>Smart Contract Example</h2>*/}
               {/*<p>If your contracts compiled and migrated successfully, below will show a stored value of 5 (by default).</p>*/}

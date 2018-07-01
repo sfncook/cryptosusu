@@ -66,3 +66,28 @@ code {
   height: 16px;
   margin-right: 10px;
 }
+
+.groupTable th {
+  font-size: 1.5rem;
+  font-weight: bolder;
+  padding: 10px;
+}
+.groupTable td {
+  padding: 10px;
+  font-size: 1.5rem;
+}
+
+.memberTable td {
+  padding: 10px;
+  border: 1px solid black;
+}
+
+.memberTable th {
+  padding: 10px;
+  border: 1px solid black;
+}
+
+.btn {
+  margin: 10px;
+}
+
