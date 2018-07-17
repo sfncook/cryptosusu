@@ -9,10 +9,10 @@ contract Susu is Ownable {
 
     using SafeMath8 for uint8;
 
-    string private groupName;
-    uint256 private contribAmtWei;
-    address[] private members;
-    uint8 private memberIdxToPayNext;
+    string public groupName;
+    uint256 public contribAmtWei;
+    address[] public members;
+    uint8 public memberIdxToPayNext;
     mapping(address => uint) private currentContributions;
 
     constructor(uint8 _groupSize, string _groupName, uint256 _contribAmtWei) public {
