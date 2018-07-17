@@ -84,7 +84,10 @@ _Presumably you have installed all the prerequisites detailed above including co
     To create a production build, use npm run build.    
 ```
   This command *should* automatically open http://localhost:3000/ in your default browser, but if not then you can do so manually.
-  
+
+ Front end should look like this:
+ ![CryptoSusu](uiScreenShot.png)
+
 ## Troubleshooting
  * If you see a blank page try opening the JavaScript development console to look for error messages
  * One common mistake I make is to forget to (re)install [Metamask](https://metamask.io/) (see Tips and Tricks below)

@@ -135,7 +135,7 @@ class App extends Component {
     return (
       <div className="App">
         <nav className="navbar pure-menu pure-menu-horizontal">
-            <img src={'./ethereum_susu_sm.png'} style={{height:'25px'}} align={'middle'} />
+            <img src={'./ethereum_susu_sm.png'} style={{height:'25px'}} alt={'CryptoSusu logo'} />
             <a href="#" className="pure-menu-heading pure-menu-link">Crypto Susu</a>
         </nav>
 
