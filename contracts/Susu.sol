@@ -47,7 +47,7 @@ contract Susu {
     }
 
     // Owner only
-    function payOut() public payable {
+    function payOut() public payable onlyOwner {
         //require(msg.sender == owner);
     }
 
