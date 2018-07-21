@@ -7,9 +7,9 @@ pragma solidity ^0.4.22;
 Adhereing to OpenZeppplin Ownable contract will allow for methods to use the
 'onlyOwner' modifier and easy transfer of ownership.
 */
-import "./OpenZeppplin/Ownable.sol";
+import "./OpenZepplin/Ownable.sol";
 
-contract Susu {
+contract Susu is Ownable {
     address public owner;
     uint8 public groupSize;
     uint256 public contribAmtWei;
