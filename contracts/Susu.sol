@@ -2,7 +2,14 @@ pragma solidity ^0.4.22;
 
 // API Design here: https://docs.google.com/presentation/d/12qfLPD88TTfvQxWLRTu5boEav8-JdRf3IjpS5WNDTvs/edit#slide=id.g3cb5a7885c_0_11
 // Design Requirements here: https://docs.google.com/document/d/1myfOSSwCPx16uUMSLbtf5RvfLFN97vmkKxjFWIvAaEM/edit
-contract Susu {
+
+/*
+Adhereing to OpenZeppplin Ownable contract will allow for methods to use the
+'onlyOwner' modifier and easy transfer of ownership.
+*/
+import "./OpenZepplin/Ownable.sol";
+
+contract Susu is Ownable {
     address public owner;
     uint8 public groupSize;
     uint256 public contribAmtWei;
@@ -28,20 +35,20 @@ contract Susu {
     }
 
     // Owner only
-    function setGroupSize(uint8 _groupSize) public {
-        require(msg.sender == owner);
+    function setGroupSize(uint8 _groupSize) public onlyOwner {
+        //require(msg.sender == owner);
         groupSize = _groupSize;
     }
 
     // Owner only
-    function setContributionAmtWei(uint256 _contribAmtWei) public {
-        require(msg.sender == owner);
+    function setContributionAmtWei(uint256 _contribAmtWei) public onlyOwner {
+        //require(msg.sender == owner);
         contribAmtWei = _contribAmtWei;
     }
 
     // Owner only
-    function payOut() public payable {
-        require(msg.sender == owner);
+    function payOut() public payable onlyOwner {
+        //require(msg.sender == owner);
     }
 
     function getContributionAmtWei() public view returns(uint256) {
