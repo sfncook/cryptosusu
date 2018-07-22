@@ -10,11 +10,31 @@ Adhereing to OpenZeppplin Ownable contract will allow for methods to use the
 import "./OpenZepplin/Ownable.sol";
 
 contract Susu is Ownable {
-    address public owner;
-    uint8 public groupSize;
-    uint256 public contribAmtWei;
-    address[] public members;
-    mapping(address => uint) currentContributions;
+    uint8 maxSusuGroups=1;
+
+    event NewSusuGroup(uint susuGroupID, string name, uint256 contribAmtWei);
+
+    //The array of Susu groups in this contract.
+    SusuGroup[] public susuGroups;
+
+    struct SusuGroup{
+      //When created
+      address public owner;
+      string public groupName;
+      uint8 public groupSize;
+      uint256 public contribAmtWei;
+
+      //Modified later
+      address[] public members;
+      mapping(address => uint) currentContributions;
+    }
+
+    /*
+    struct Contribution{
+        address contributingMember;
+        DateTime timestamp;
+    }
+    */
 
     constructor() public payable {
         owner = msg.sender;
@@ -34,7 +54,33 @@ contract Susu is Ownable {
         currentContributions[members[3]] = 2500000000000000;
     }
 
+    function createSusuGroup(uint8 _groupSize, string _groupName, uint256 _contribAmtWei){
+      if (susuGroups.length<maxSusuGroups){
+        uint newSusuGroupID = susuGroups.push(SusuGroup(msg.sender, _groupName, _groupSize, _contribAmtWei)) - 1;
+        NewSusuGroup(newSusuGroupID, _groupName, _contribAmtWei);
+
+      } else {
+        //Report out an error.
+      }
+    }
+
+    function joinGroupWithMember(address _joiningMember){
+      //Automatically joining group 1
+      SusuGroup thisGroup = susuGroups[0];
+      if (thisGroup.members.length < thisGroup.groupSize){
+        thisGroup.members.push(_joiningMember);
+
+      } else {
+        //Error: Group already full!
+      }
+
+
+    }
+
+
+
     // Owner only
+    /*
     function setGroupSize(uint8 _groupSize) public onlyOwner {
         //require(msg.sender == owner);
         groupSize = _groupSize;
@@ -45,6 +91,7 @@ contract Susu is Ownable {
         //require(msg.sender == owner);
         contribAmtWei = _contribAmtWei;
     }
+    */
 
     // Owner only
     function payOut() public payable onlyOwner {
