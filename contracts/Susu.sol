@@ -19,13 +19,13 @@ contract Susu is Ownable {
 
     struct SusuGroup{
       //When created
-      address public owner;
-      string public groupName;
-      uint8 public groupSize;
-      uint256 public contribAmtWei;
+      address owner;
+      string groupName;
+      uint8 groupSize;
+      uint256 contribAmtWei;
 
       //Modified later
-      address[] public members;
+      address[] members;
       mapping(address => uint) currentContributions;
     }
 
@@ -36,10 +36,12 @@ contract Susu is Ownable {
     }
     */
 
+
     constructor() public payable {
         owner = msg.sender;
 
         // TODO: This is test data:
+        /*
         groupSize = 4;
         contribAmtWei = 10000000000000000;
         members = [
@@ -52,23 +54,24 @@ contract Susu is Ownable {
         currentContributions[members[0]] = 10000000000000000;
         currentContributions[members[1]] = 10000000000000000;
         currentContributions[members[3]] = 2500000000000000;
+        */
     }
 
-    function createSusuGroup(uint8 _groupSize, string _groupName, uint256 _contribAmtWei){
+    function createSusuGroup(uint8 _groupSize, string _groupName, uint256 _contribAmtWei) public {
       if (susuGroups.length<maxSusuGroups){
-        uint newSusuGroupID = susuGroups.push(SusuGroup(msg.sender, _groupName, _groupSize, _contribAmtWei)) - 1;
-        NewSusuGroup(newSusuGroupID, _groupName, _contribAmtWei);
+        uint _newSusuGroupID = susuGroups.push(SusuGroup(msg.sender, _groupName, _groupSize, _contribAmtWei, new address[](0))) - 1;
+        emit NewSusuGroup(_newSusuGroupID, _groupName, _contribAmtWei);
 
       } else {
         //Report out an error.
       }
     }
 
-    function joinGroupWithMember(address _joiningMember){
+    function joinGroupWithMember(address _joiningMember) public {
       //Automatically joining group 1
-      SusuGroup thisGroup = susuGroups[0];
-      if (thisGroup.members.length < thisGroup.groupSize){
-        thisGroup.members.push(_joiningMember);
+      //SusuGroup thisGroup = susuGroups[0];
+      if (susuGroups[0].members.length < susuGroups[0].groupSize){
+        susuGroups[0].members.push(_joiningMember);
 
       } else {
         //Error: Group already full!
@@ -98,6 +101,8 @@ contract Susu is Ownable {
         //require(msg.sender == owner);
     }
 
+    /////////////////
+    /*
     function getContributionAmtWei() public view returns(uint256) {
         return contribAmtWei;
     }
@@ -129,5 +134,5 @@ contract Susu is Ownable {
     function leaveGroup() public payable {
         // TODO
     }
-
+    */
 }
