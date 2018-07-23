@@ -5,10 +5,9 @@ import '../App.css'
 class PartnerRow extends Component {
 
   render() {
-    console.log('PartnerRow props:', this.props);
     return (
-      <tr className={(this.props.myAddress===this.props.partnerAddress?'tr-my-account':'')}>
-        <td>{this.props.isOwner ? 'Owner' : ''}</td>
+      <tr>
+        <td>{this.props.myAddress===this.props.partnerAddress?'(me) ':''}{this.props.isOwner ? 'Owner' : 'Partner'}</td>
         <td>{this.props.partnerAddress}</td>
         <td className={this.getTdContribColor(this.props.partnerContrib)}>
           {this.props.partnerContrib} ether
