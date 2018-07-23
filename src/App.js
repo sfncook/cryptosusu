@@ -8,6 +8,7 @@ import './css/oswald.css'
 import './css/open-sans.css'
 import './css/pure-min.css'
 import './App.css'
+import PartnerRow from "./components/PartnerRow";
 
 let contractInstance;
 
@@ -190,6 +191,7 @@ class App extends Component {
                       {this.state.member3Contrib} ether
                     </td>
                   </tr>
+                  <PartnerRow partnerAddress={'new partner address'} isOwner={true} partnerContrib={1.1}/>
                 </tbody>
               </table>
             </div>
@@ -204,14 +206,8 @@ class App extends Component {
     );
   }
 
-  getTdContribColor(memberContrib) {
-    if(this.state.contribAmt <= memberContrib) {
-      return 'td-contrib-green';
-    } else if(this.state.contribAmt > memberContrib && 0 < memberContrib) {
-      return 'td-contrib-yellow';
-    } else {
-      return 'td-contrib-red';
-    }
+  createPartnerRows() {
+
   }
 
   isOwner(memberAddress) {
