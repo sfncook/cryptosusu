@@ -29,6 +29,10 @@ class DeployPage extends Component {
               </tr>
               </tbody>
             </table>
+
+            <div className="pure-u-1-1">
+              <button onClick={(e)=>{this.clickCreate(e)}} className="btn-contribute" type="button" data-id="0">Create New Susu Group</button>
+            </div>
           </div>
         </div>
       </main>
