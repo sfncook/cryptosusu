@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-// import {
-//   BrowserRouter as Router,
-//   Route
-// } from 'react-router-dom'
+import {
+  BrowserRouter as Router,
+  Route
+} from 'react-router-dom'
 
 import GroupPage from "./components/GroupPage";
 import DeployPage from "./components/DeployPage";
@@ -18,8 +18,13 @@ class App extends Component {
             <a href="#" className="pure-menu-heading pure-menu-link">Crypto Susu</a>
         </nav>
 
-        <GroupPage />
-        <DeployPage />
+        <Router>
+          <div>
+            <Route exact path="/" component={DeployPage}/>
+            <Route path="/:contractAddress" component={GroupPage}/>
+          </div>
+        </Router>
+
 
       </div>
     );

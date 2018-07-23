@@ -30,6 +30,7 @@ class GroupPage extends Component {
       member3Contrib: 0.0,
       owner: '0x0',
       partnerObjects: [],
+      contractAddress: props.match.params.contractAddress
     }
   }
 
