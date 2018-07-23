@@ -115,8 +115,12 @@ code {
   background-color: lightgreen;
 }
 
-.btn-disabled {
-  background-color: lightgray;
+.btn-join {
+  background-color: lightgreen;
+}
+
+.btn-terminate {
+  background-color: pink;
 }
 
 button {

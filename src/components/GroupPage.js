@@ -122,6 +122,11 @@ class GroupPage extends Component {
   }
 
   render() {
+    let isOwner = this.isOwner(this.state.myAddress);
+    let isGroupFull = this.isGroupFull();
+    let isGroupTerminated = false;
+    let isMember = this.isMember();
+
     return (
       <main className="container">
         <div className="pure-g">
@@ -134,7 +139,8 @@ class GroupPage extends Component {
             </table>
           </div>
 
-          <ActionButtons />
+          <ActionButtons isOwner={isOwner} isGroupFull={isGroupFull} isGroupTerminated={isGroupTerminated} isMember={isMember}/>
+
         </div>
       </main>
     );
@@ -160,6 +166,26 @@ class GroupPage extends Component {
 
   isOwner(memberAddress) {
     return memberAddress === this.state.owner;
+  }
+
+  isGroupFull() {
+    let isGroupFull = true;
+    for(let partnerObj of this.state.partnerObjects) {
+      if(typeof partnerObj.address ===  'undefined') {
+        isGroupFull = false;
+        break;
+      }
+    }
+    return this.state.groupSize>0 && isGroupFull;
+  }
+
+  isMember() {
+    for(let partnerObj of this.state.partnerObjects) {
+      if(partnerObj.address ===  this.state.myAddress) {
+        return true;
+      }
+    }
+    return false;
   }
 }
 
