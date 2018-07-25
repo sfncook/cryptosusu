@@ -103,10 +103,6 @@ code {
   background-color: pink;
 }
 
-.tr-my-account {
-  border: 6px solid deepskyblue;
-}
-
 .btn-contribute {
   background-color: lightgreen;
 }
@@ -119,8 +115,12 @@ code {
   background-color: lightgreen;
 }
 
-.btn-disabled {
-  background-color: lightgray;
+.btn-join {
+  background-color: lightgreen;
+}
+
+.btn-terminate {
+  background-color: pink;
 }
 
 button {

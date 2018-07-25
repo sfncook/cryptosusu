@@ -96,3 +96,12 @@ _Presumably you have installed all the prerequisites detailed above including co
 # Tips and Tricks
 ## Restarting Ganache
  I have found that Metamask does not like it when you restart Ganache because the transaction indexes get out of synch.  So anytime you restart Ganache make sure you "reset account" in the Metamask UI. (you'll have to look around the little Metamask UI for this feature)
+ 
+# Testing
+We use [Truffle](https://truffleframework.com/docs/getting_started/testing) and [solidity-coverage](https://github.com/sc-forks/solidity-coverage) for testing.  To run all tests and generate coverage simply run this command:
+```console
+./node_modules/.bin/solidity-coverage
+```
+
+(Output excluded for brevity)  All tests in `./test/...` will be ran.  Test coverage procedures will temporarily create a directory named `./coverageEnv` but then delete that once tests are complete.  Test results will be stored in a (possibly new directory) named `./coverage`.  You can view the results in a pretty HTML page by opening the file `./coverage/lcov-report/index.html` in your browser.  (no need to start a webserver or anything, just open the file straight up in your browser) 
+ 
