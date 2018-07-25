@@ -35,7 +35,7 @@ class GroupPage extends Component {
       member1Contrib: 0.0,
       member2Contrib: 0.0,
       member3Contrib: 0.0,
-      owner: '0x0',
+      amIOwner: false,
       partnerObjects: [],
       contractAddress: props.match.params.contractAddress
     }
@@ -84,62 +84,33 @@ class GroupPage extends Component {
       this.setState({contribAmt:contribAmt});
     });
 
-    susuContract.getManyMembers((err, manyMembersBig)=>{
-      let bigNumber = new BigNumber(manyMembersBig);
-      const manyMembers = bigNumber.toNumber();
-      this.setState({manyMembers:manyMembers});
+    susuContract.amIOwner((err, amIOwner)=>{
+      this.setState({amIOwner:amIOwner});
+      susuContract.getManyMembers((err, manyMembersBig)=>{
+        let bigNumber = new BigNumber(manyMembersBig);
+        const manyMembers = bigNumber.toNumber();
+        this.setState({manyMembers:manyMembers});
 
-      susuContract.groupSize((err, groupSizeBig)=>{
-        let bigNumber = new BigNumber(groupSizeBig);
-        const groupSize = bigNumber.toNumber();
-        this.setState({groupSize:groupSize});
+        susuContract.groupSize((err, groupSizeBig)=>{
+          let bigNumber = new BigNumber(groupSizeBig);
+          const groupSize = bigNumber.toNumber();
+          this.setState({groupSize:groupSize});
 
-        for(var i=0; i<this.state.manyMembers; i++) {
-          let newPartnerObj = {};
-          let partnerObjects = this.state.partnerObjects;
-          partnerObjects.push(newPartnerObj);
-          this.setState({partnerObjects:partnerObjects});
-          this.state.susuContract.getMemberAtIndex(i, this.setMemberAddressCallback(i));
-          this.state.susuContract.getContributionForMember(i, this.setMemberContribCallback(i));
-        }
+          for(var i=0; i<this.state.manyMembers; i++) {
+            let newPartnerObj = {};
+            let partnerObjects = this.state.partnerObjects;
+            partnerObjects.push(newPartnerObj);
+            this.setState({partnerObjects:partnerObjects});
+            this.state.susuContract.getMemberAtIndex(i, this.setMemberAddressCallback(i));
+            this.state.susuContract.getContributionForMember(i, this.setMemberContribCallback(i));
+          }
+        });
       });
     });
-
-
-
-    //   .then((partnerAddress)=>{
-    //   partnerObj.address = partnerAddress;
-    //   contractInstance.getContributionForMember.call(partnerAddress).then((partnerContribWei)=>{
-    //     let bigNumber = new BigNumber(partnerContribWei);
-    //     partnerObj.contrib = this.state.web3.fromWei(bigNumber, 'ether').toNumber();
-    //     let partnerObjects = this.state.partnerObjects;
-    //     partnerObjects[i] = partnerObj;
-    //     return this.setState({ partnerObjects: partnerObjects });
-    //   });
-    //   return partnerAddress;
-    // });
-
-    // susuContract.deployed().then((instance) => {
-    //   return instance.contribAmtWei.call();
-    // }).then((result) => {
-    //   let bigNumber = new BigNumber(result);
-    //   let contribAmt = this.state.web3.fromWei(bigNumber, 'ether').toNumber();
-    //   return this.setState({ contribAmt: contribAmt});
-    // }).catch(function(err) {
-    //   console.error('contribAmt error:', err.message);
-    // });
-    //
-    // susuContract.deployed().then((instance) => {
-    //   return instance.owner.call();
-    // }).then((result) => {
-    //   return this.setState({ owner: result});
-    // }).catch(function(err) {
-    //   console.error('owner error:', err.message);
-    // });
   }
 
   render() {
-    let isOwner = this.isOwner(this.state.myAddress);
+    let isOwner = this.state.amIOwner;
     let isGroupFull = this.isGroupFull();
     let isGroupTerminated = false;
     let isMember = this.isMember();
@@ -192,7 +163,7 @@ class GroupPage extends Component {
           key={keyId++} // Required for ES6/React(?) array items
           myAddress={this.state.myAddress}
           partnerAddress={partnerObj.address}
-          isOwner={this.isOwner(partnerObj.address)}
+          isOwner={this.state.amIOwner}
           partnerContrib={partnerObj.contrib}
           contractContrib={this.state.contribAmt}
         />
@@ -211,10 +182,6 @@ class GroupPage extends Component {
       );
     }
     return rows;
-  }
-
-  isOwner(memberAddress) {
-    return memberAddress === this.state.owner;
   }
 
   isGroupFull() {
