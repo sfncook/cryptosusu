@@ -23,15 +23,10 @@ contract Susu is Ownable {
         groupName = _groupName;
         contribAmtWei = _contribAmtWei;
         members.length = _groupSize;
-//        members[0] = owner;
-        members.push(owner);
+        members[0] = owner;
         membersJoined = 1;
         maxMembers = 100;
         memberIdxToPayNext = 0;
-    }
-
-    function displayMessage() public pure returns (string) {
-        return "Whale hello there!";
     }
 
     function payOut() public payable onlyOwner {

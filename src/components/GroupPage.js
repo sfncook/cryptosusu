@@ -21,7 +21,7 @@ class GroupPage extends Component {
       web3: null,
       myAddress: '',
       contribAmt: 0,
-      groupName: 'GroupName-123-XYZ',
+      groupName: '---',
       payoutFrequency: 'monthly',
       groupSize: 4,
       member0Address: '',
@@ -77,9 +77,6 @@ class GroupPage extends Component {
     });
 
     const loadedContract = this.state.web3.eth.contract(SusuContract.abi).at(this.state.contractAddress);
-    loadedContract.displayMessage.call((err, msg)=>{
-      console.log('err:',err,' msg:', msg);
-    });
 
     // init partner objects array
     for(let i=0; i<this.state.groupSize; i++) {
@@ -88,9 +85,23 @@ class GroupPage extends Component {
       this.setState({ partnerObjects: partnerObjects });
     }
 
-    loadedContract.getMemberAtIndex(0, (err, results)=>{
-      console.log('err:',err,' results:', results);
+    loadedContract.groupName((err, groupName)=>{
+      this.setState({groupName:groupName});
     })
+
+    loadedContract.contribAmtWei((err, contribAmtWei)=>{
+      let bigNumber = new BigNumber(contribAmtWei);
+      const contribAmt = this.state.web3.fromWei(bigNumber, 'ether').toNumber();
+      this.setState({contribAmt:contribAmt});
+    })
+
+    loadedContract.getNumberOfMembersNeeded((err, groupSizeBig)=>{
+      let bigNumber = new BigNumber(groupSizeBig);
+      const groupSize = bigNumber.toNumber();
+      console.log('groupSize:',groupSize);
+      this.setState({groupSize:groupSize});
+    })
+
     //   .then((partnerAddress)=>{
     //   partnerObj.address = partnerAddress;
     //   contractInstance.getContributionForMember.call(partnerAddress).then((partnerContribWei)=>{

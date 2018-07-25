@@ -47,10 +47,6 @@ class DeployPage extends Component {
                 <td><input/></td>
               </tr>
               <tr id="memberTemplate">
-                <th>Payout Frequency:</th>
-                <td><input/></td>
-              </tr>
-              <tr id="memberTemplate">
                 <th>Contribution Amt (eth):</th>
                 <td><input/></td>
               </tr>
@@ -75,7 +71,10 @@ class DeployPage extends Component {
     const newContract = this.state.web3.eth.contract(abi)
     const options = { from: this.state.web3.eth.accounts[0], data: unlinked_binary, gas: 10000000 }
 
-    newContract.new(options, this.newContractCallback())
+    const groupSize = 3;
+    const groupName = 'New Group Name';
+    const contribAmtWei = 1234567890123456;
+    newContract.new(groupSize, groupName, contribAmtWei, options, this.newContractCallback())
   }
 
   newContractCallback() {
@@ -83,10 +82,6 @@ class DeployPage extends Component {
       const { address } = newContract;
       if(typeof address !== 'undefined' ) {
         window.location.href = '/'+address;
-        // console.log('#1 err:', err,' newContract:',newContract);
-        // newContract.displayMessage.call((obj1, obj2, obj3)=>{
-        //   console.log('obj1:',obj1,' obj2:', obj2, ' obj3:', obj3);
-        // });
       }
     }
   }
