@@ -12,7 +12,8 @@ class DeployPage extends Component {
     super(props);
 
     this.state = {
-      web3: null
+      web3: null,
+      isLoading: false,
     }
   }
 
@@ -29,6 +30,8 @@ class DeployPage extends Component {
   }
 
   render() {
+    const disabled = this.state.isLoading ? 'btn-disabled' : '';
+    const btnClasses = `${disabled} btn-contribute`;
     return (
       <main className="container">
         <div className="pure-g">
@@ -55,8 +58,9 @@ class DeployPage extends Component {
             </table>
 
             <div className="pure-u-1-1">
-              <button onClick={(e)=>{this.clickCreate(e)}} className="btn-contribute" type="button" data-id="0">Create New Susu Group</button>
+              <button onClick={(e)=>{this.clickCreate(e)}} className={btnClasses} type="button" data-id="0" hidden={this.state.isLoading}>Create New Susu Group</button>
             </div>
+            <h1 hidden={!this.state.isLoading} className={"please-wait"}>Deploying Contract.  Please wait</h1>
           </div>
         </div>
       </main>
@@ -65,7 +69,7 @@ class DeployPage extends Component {
 
   clickCreate(e) {
     e.preventDefault();
-    console.log('create clicked');
+    this.setState({isLoading:true});
     const susuContract = contract(SusuContract);
     const { unlinked_binary, abi } = susuContract;
     const newContract = this.state.web3.eth.contract(abi)
@@ -78,10 +82,11 @@ class DeployPage extends Component {
     return (err, newContract) => {
       const { address } = newContract;
       if(typeof address !== 'undefined' ) {
-        console.log('#1 err:', err,' newContract:',newContract);
-        newContract.displayMessage.call((obj1, obj2, obj3)=>{
-          console.log('obj1:',obj1,' obj2:', obj2, ' obj3:', obj3);
-        });
+        window.location.href = '/'+address;
+        // console.log('#1 err:', err,' newContract:',newContract);
+        // newContract.displayMessage.call((obj1, obj2, obj3)=>{
+        //   console.log('obj1:',obj1,' obj2:', obj2, ' obj3:', obj3);
+        // });
       }
     }
   }
