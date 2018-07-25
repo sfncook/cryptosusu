@@ -48,8 +48,8 @@ class GroupPage extends Component {
         // Instantiate contract once web3 provided.
         this.instantiateContract();
       })
-      .catch(() => {
-        console.log('Error finding web3.');
+      .catch((err) => {
+        console.log('Error finding web3. err:',err);
       })
   }
 
@@ -69,56 +69,61 @@ class GroupPage extends Component {
   }
 
   instantiateContract() {
-    const contract = require('truffle-contract');
+    // const contract = require('truffle-contract');
 
     let _this = this;
     this.state.web3.eth.getAccounts(function(error, accounts) {
       _this.setState({myAddress: accounts[0]});
     });
 
-    const susuContract = contract(SusuContract);
-    susuContract.setProvider(this.state.web3.currentProvider);
-
-    // init partner objects array
-    for(let i=0; i<this.state.groupSize; i++) {
-      let partnerObjects = this.state.partnerObjects;
-      partnerObjects.push({});
-      this.setState({ partnerObjects: partnerObjects });
-    }
-
-    susuContract.deployed().then((contractInstance) => {
-      for(let i=0; i<this.state.groupSize; i++) {
-        this.setPartnerObj(contractInstance, i);
-      }
-      return contractInstance;
+    const loadedContract = this.state.web3.eth.contract(SusuContract.abi).at(this.state.contractAddress);
+    loadedContract.displayMessage.call((obj1, obj2, obj3)=>{
+      console.log('obj1:',obj1,' obj2:', obj2, ' obj3:', obj3);
     });
 
-    susuContract.deployed().then((instance) => {
-      return instance.groupSize.call();
-    }).then((result) => {
-      let groupSize = (new BigNumber(result)).toNumber();
-      return this.setState({ groupSize: groupSize });
-    }).catch(function(err) {
-      console.error('groupSize error:', err.message);
-    });
-
-    susuContract.deployed().then((instance) => {
-      return instance.contribAmtWei.call();
-    }).then((result) => {
-      let bigNumber = new BigNumber(result);
-      let contribAmt = this.state.web3.fromWei(bigNumber, 'ether').toNumber();
-      return this.setState({ contribAmt: contribAmt});
-    }).catch(function(err) {
-      console.error('contribAmt error:', err.message);
-    });
-
-    susuContract.deployed().then((instance) => {
-      return instance.owner.call();
-    }).then((result) => {
-      return this.setState({ owner: result});
-    }).catch(function(err) {
-      console.error('owner error:', err.message);
-    });
+    // const susuContract = contract(SusuContract);
+    // susuContract.setProvider(this.state.web3.currentProvider);
+    //
+    // // init partner objects array
+    // for(let i=0; i<this.state.groupSize; i++) {
+    //   let partnerObjects = this.state.partnerObjects;
+    //   partnerObjects.push({});
+    //   this.setState({ partnerObjects: partnerObjects });
+    // }
+    //
+    // susuContract.deployed().then((contractInstance) => {
+    //   for(let i=0; i<this.state.groupSize; i++) {
+    //     this.setPartnerObj(contractInstance, i);
+    //   }
+    //   return contractInstance;
+    // });
+    //
+    // susuContract.deployed().then((instance) => {
+    //   return instance.groupSize.call();
+    // }).then((result) => {
+    //   let groupSize = (new BigNumber(result)).toNumber();
+    //   return this.setState({ groupSize: groupSize });
+    // }).catch(function(err) {
+    //   console.error('groupSize error:', err.message);
+    // });
+    //
+    // susuContract.deployed().then((instance) => {
+    //   return instance.contribAmtWei.call();
+    // }).then((result) => {
+    //   let bigNumber = new BigNumber(result);
+    //   let contribAmt = this.state.web3.fromWei(bigNumber, 'ether').toNumber();
+    //   return this.setState({ contribAmt: contribAmt});
+    // }).catch(function(err) {
+    //   console.error('contribAmt error:', err.message);
+    // });
+    //
+    // susuContract.deployed().then((instance) => {
+    //   return instance.owner.call();
+    // }).then((result) => {
+    //   return this.setState({ owner: result});
+    // }).catch(function(err) {
+    //   console.error('owner error:', err.message);
+    // });
   }
 
   render() {
