@@ -51,8 +51,11 @@
   },
   "dependencies": {
     "dotenv": "^2.0.0",
+    "node-gyp": "^3.7.0",
+    "openzeppelin-solidity": "1.11.0",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
+    "rebuild": "^0.1.2",
     "zeppelin-solidity": "^1.10.0"
   },
   "scripts": {
