@@ -40,15 +40,15 @@ class DeployPage extends Component {
               <tbody>
               <tr id="memberTemplate">
                 <th>Group Name:</th>
-                <td><input/></td>
+                <td><input id={'group_name'}/></td>
               </tr>
               <tr id="memberTemplate">
                 <th>Many Partners:</th>
-                <td><input/></td>
+                <td><input id={'group_size'}/></td>
               </tr>
               <tr id="memberTemplate">
                 <th>Contribution Amt (eth):</th>
-                <td><input/></td>
+                <td><input id={'contrib_amt'}/></td>
               </tr>
               </tbody>
             </table>
@@ -71,9 +71,10 @@ class DeployPage extends Component {
     const newContract = this.state.web3.eth.contract(abi)
     const options = { from: this.state.web3.eth.accounts[0], data: unlinked_binary, gas: 10000000 }
 
-    const groupSize = 3;
-    const groupName = 'New Group Name';
-    const contribAmtWei = 1234567890123456;
+    const groupSize = document.getElementById('group_size').value;
+    const groupName = document.getElementById('group_name').value;
+    const contribAmtEth = document.getElementById('contrib_amt').value;
+    const contribAmtWei = this.state.web3.toWei(contribAmtEth, 'ether');
     newContract.new(groupSize, groupName, contribAmtWei, options, this.newContractCallback())
   }
 
