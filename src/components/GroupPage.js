@@ -11,6 +11,7 @@ import '../App.css'
 import PartnerRow from "./PartnerRow";
 import GroupInfo from "./GroupInfo";
 import ActionButtons from "./ActionButtons";
+import PartnerRowEmpty from "./PartnerRowEmpty";
 
 class GroupPage extends Component {
 
@@ -151,6 +152,7 @@ class GroupPage extends Component {
             <table className="memberTable">
               <tbody>
               {this.createPartnerRows()}
+              {this.createEmptyPartnerRows()}
               </tbody>
             </table>
           </div>
@@ -193,6 +195,18 @@ class GroupPage extends Component {
           isOwner={this.isOwner(partnerObj.address)}
           partnerContrib={partnerObj.contrib}
           contractContrib={this.state.contribAmt}
+        />
+      );
+    }
+    return rows;
+  }
+  createEmptyPartnerRows() {
+    let rows = [];
+
+    for(var i=0; i<(this.state.groupSize - this.state.manyMembers); i++) {
+      rows.push(
+        <PartnerRowEmpty
+          key={i} // Required for ES6/React(?) array items
         />
       );
     }
