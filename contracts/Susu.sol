@@ -90,8 +90,9 @@ contract Susu is Ownable {
     }
     
     function joinGroup() public {
-        members[membersJoined] = msg.sender;
-        membersJoined = membersJoined.add(1);
+        members.push(msg.sender);
+//        members[membersJoined] = msg.sender;
+//        membersJoined = membersJoined.add(1);
     }
 
     function contribute() public payable {

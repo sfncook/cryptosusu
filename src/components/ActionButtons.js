@@ -62,6 +62,13 @@ class ActionButtons extends Component {
   clickJoin(e) {
     e.preventDefault();
     console.log('join clicked');
+    // this.props.susuContract.joinGroup.sendTransaction({from:this.props.myAddress, gas:30000}, (err, response)=>{
+    //   console.log('err:',err,' response:',response);
+    // });
+    const getData = this.props.susuContract.joinGroup.getData();
+    this.props.web3.eth.sendTransaction({from:this.props.myAddress, data: getData, gas:300000}, (err, response)=>{
+      console.log('err:',err,' response:',response);
+    });
   }
 }
 
@@ -70,6 +77,9 @@ ActionButtons.defaultProps = {
   isGroupFull: false,
   isGroupTerminated: false,
   isMember: false,
+  susuContract: null,
+  myAddress: '',
+  web3:null,
 };
 
 export default ActionButtons

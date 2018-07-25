@@ -128,7 +128,7 @@ class GroupPage extends Component {
             </table>
           </div>
 
-          <ActionButtons isOwner={isOwner} isGroupFull={isGroupFull} isGroupTerminated={isGroupTerminated} isMember={isMember}/>
+          <ActionButtons isOwner={isOwner} isGroupFull={isGroupFull} isGroupTerminated={isGroupTerminated} isMember={isMember} susuContract={this.state.susuContract} myAddress={this.state.myAddress} web3={this.state.web3}/>
 
         </div>
       </main>
