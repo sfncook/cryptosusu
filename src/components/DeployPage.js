@@ -1,8 +1,32 @@
 import React, { Component } from 'react'
+import contract from 'truffle-contract'
+
+import SusuContract from '../../build/contracts/Susu.json'
+import getWeb3 from '../utils/getWeb3'
 
 import '../App.css'
 
 class DeployPage extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      web3: null
+    }
+  }
+
+  componentWillMount() {
+    getWeb3
+      .then(results => {
+        this.setState({
+          web3: results.web3
+        });
+      })
+      .catch(() => {
+        console.log('Error finding web3.');
+      })
+  }
 
   render() {
     return (
@@ -42,6 +66,18 @@ class DeployPage extends Component {
   clickCreate(e) {
     e.preventDefault();
     console.log('create clicked');
+    const susuContract = contract(SusuContract);
+    const { unlinked_binary, abi } = susuContract;
+    const newContract = this.state.web3.eth.contract(abi)
+    const options = { from: this.state.web3.eth.accounts[0], data: unlinked_binary, gas: 10000000 }
+
+    newContract.new(options, this.newContractCallback())
+  }
+
+  newContractCallback() {
+    return (err, contract) => {
+      console.log('err:', err,' contract:',contract);
+    }
   }
 }
 

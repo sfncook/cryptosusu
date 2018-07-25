@@ -23,7 +23,8 @@ contract Susu is Ownable {
         groupName = _groupName;
         contribAmtWei = _contribAmtWei;
         members.length = _groupSize;
-        members[0] = owner;
+//        members[0] = owner;
+        members.push(owner);
         membersJoined = 1;
         maxMembers = 100;
         memberIdxToPayNext = 0;
