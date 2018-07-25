@@ -185,14 +185,7 @@ class GroupPage extends Component {
   }
 
   isGroupFull() {
-    let isGroupFull = true;
-    for(let partnerObj of this.state.partnerObjects) {
-      if(typeof partnerObj.address ===  'undefined') {
-        isGroupFull = false;
-        break;
-      }
-    }
-    return this.state.groupSize>0 && isGroupFull;
+    return this.state.manyMembers >= this.state.groupSize;
   }
 
   isMember() {
