@@ -19,11 +19,13 @@ class GroupPage extends Component {
 
     this.state = {
       web3: null,
+      susuContract: null,
       myAddress: '',
       contribAmt: 0,
       groupName: '---',
       payoutFrequency: 'monthly',
-      groupSize: 4,
+      manyMembers: 0,
+      groupSize: 0,
       member0Address: '',
       member1Address: '',
       member2Address: '',
@@ -53,21 +55,6 @@ class GroupPage extends Component {
       })
   }
 
-  setPartnerObj(contractInstance, i) {
-    let partnerObj = {};
-    contractInstance.getMemberAtIndex.call(i).then((partnerAddress)=>{
-      partnerObj.address = partnerAddress;
-      contractInstance.getContributionForMember.call(partnerAddress).then((partnerContribWei)=>{
-        let bigNumber = new BigNumber(partnerContribWei);
-        partnerObj.contrib = this.state.web3.fromWei(bigNumber, 'ether').toNumber();
-        let partnerObjects = this.state.partnerObjects;
-        partnerObjects[i] = partnerObj;
-        return this.setState({ partnerObjects: partnerObjects });
-      });
-      return partnerAddress;
-    });
-  }
-
   instantiateContract() {
     // const contract = require('truffle-contract');
 
@@ -76,7 +63,8 @@ class GroupPage extends Component {
       _this.setState({myAddress: accounts[0]});
     });
 
-    const loadedContract = this.state.web3.eth.contract(SusuContract.abi).at(this.state.contractAddress);
+    const susuContract = this.state.web3.eth.contract(SusuContract.abi).at(this.state.contractAddress);
+    this.setState({susuContract:susuContract});
 
     // init partner objects array
     for(let i=0; i<this.state.groupSize; i++) {
@@ -85,21 +73,38 @@ class GroupPage extends Component {
       this.setState({ partnerObjects: partnerObjects });
     }
 
-    loadedContract.groupName((err, groupName)=>{
+    susuContract.groupName((err, groupName)=>{
       this.setState({groupName:groupName});
-    })
+    });
 
-    loadedContract.contribAmtWei((err, contribAmtWei)=>{
+    susuContract.contribAmtWei((err, contribAmtWei)=>{
       let bigNumber = new BigNumber(contribAmtWei);
       const contribAmt = this.state.web3.fromWei(bigNumber, 'ether').toNumber();
       this.setState({contribAmt:contribAmt});
-    })
+    });
 
-    loadedContract.getManyMembers((err, groupSizeBig)=>{
-      let bigNumber = new BigNumber(groupSizeBig);
-      const groupSize = bigNumber.toNumber();
-      this.setState({groupSize:groupSize});
-    })
+    susuContract.getManyMembers((err, manyMembersBig)=>{
+      let bigNumber = new BigNumber(manyMembersBig);
+      const manyMembers = bigNumber.toNumber();
+      this.setState({manyMembers:manyMembers});
+
+      susuContract.groupSize((err, groupSizeBig)=>{
+        let bigNumber = new BigNumber(groupSizeBig);
+        const groupSize = bigNumber.toNumber();
+        this.setState({groupSize:groupSize});
+
+        for(var i=0; i<this.state.manyMembers; i++) {
+          let newPartnerObj = {};
+          let partnerObjects = this.state.partnerObjects;
+          partnerObjects.push(newPartnerObj);
+          this.setState({partnerObjects:partnerObjects});
+          this.state.susuContract.getMemberAtIndex(i, this.setMemberAddressCallback(i));
+          this.state.susuContract.getContributionForMember(i, this.setMemberContribCallback(i));
+        }
+      });
+    });
+
+
 
     //   .then((partnerAddress)=>{
     //   partnerObj.address = partnerAddress;
@@ -113,22 +118,6 @@ class GroupPage extends Component {
     //   return partnerAddress;
     // });
 
-    // susuContract.deployed().then((contractInstance) => {
-    //   for(let i=0; i<this.state.groupSize; i++) {
-    //     this.setPartnerObj(contractInstance, i);
-    //   }
-    //   return contractInstance;
-    // });
-    //
-    // susuContract.deployed().then((instance) => {
-    //   return instance.groupSize.call();
-    // }).then((result) => {
-    //   let groupSize = (new BigNumber(result)).toNumber();
-    //   return this.setState({ groupSize: groupSize });
-    // }).catch(function(err) {
-    //   console.error('groupSize error:', err.message);
-    // });
-    //
     // susuContract.deployed().then((instance) => {
     //   return instance.contribAmtWei.call();
     // }).then((result) => {
@@ -158,7 +147,7 @@ class GroupPage extends Component {
       <main className="container">
         <div className="pure-g">
           <div className="pure-u-1-1" style={{paddingTop:'15px'}}>
-            <GroupInfo groupName={this.state.groupName} payoutFrequency={this.state.payoutFrequency} contribAmt={this.state.contribAmt}/>
+            <GroupInfo groupName={this.state.groupName} contribAmt={this.state.contribAmt}/>
             <table className="memberTable">
               <tbody>
               {this.createPartnerRows()}
@@ -173,8 +162,27 @@ class GroupPage extends Component {
     );
   }// render()
 
+  setMemberAddressCallback(partnerIndex){
+    return (err, partnerAddress)=>{
+      let partnerObjects = this.state.partnerObjects;
+      partnerObjects[partnerIndex].address = partnerAddress;
+      this.setState({partnerObjects:partnerObjects});
+    }
+  }
+
+  setMemberContribCallback(partnerIndex){
+    return (err, partnerContribWei)=>{
+      let bigNumber = new BigNumber(partnerContribWei);
+      const contribAmt = this.state.web3.fromWei(bigNumber, 'ether').toNumber();
+      let partnerObjects = this.state.partnerObjects;
+      partnerObjects[partnerIndex].contrib = contribAmt;
+      this.setState({partnerObjects:partnerObjects});
+    }
+  }
+
   createPartnerRows() {
     let rows = [];
+
     let keyId = 1;
     for(let partnerObj of this.state.partnerObjects) {
       rows.push(
