@@ -29,7 +29,11 @@ contract Susu is Ownable {
         maxMembers = 100;
         memberIdxToPayNext = 0;
     }
-    
+
+    function displayMessage() public pure returns (string) {
+        return "Whale hello there!";
+    }
+
     function payOut() public payable onlyOwner {
         if(everyonePaid()) {
             resetBalances();

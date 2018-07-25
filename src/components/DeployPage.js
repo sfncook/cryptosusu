@@ -66,6 +66,7 @@ class DeployPage extends Component {
   clickCreate(e) {
     e.preventDefault();
     console.log('create clicked');
+    console.log('web3.eth:',this.state.web3.eth);
     const susuContract = contract(SusuContract);
     const { unlinked_binary, abi } = susuContract;
     const newContract = this.state.web3.eth.contract(abi)
@@ -76,7 +77,20 @@ class DeployPage extends Component {
 
   newContractCallback() {
     return (err, contract) => {
-      console.log('err:', err,' contract:',contract);
+      const { address } = contract;
+      if(typeof address !== 'undefined' ) {
+        console.log('#1 err:', err,' contract:',contract);
+        contract.displayMessage.call((obj1, obj2, obj3)=>{
+          console.log('obj1:',obj1,' obj2:', obj2, ' obj3:', obj3);
+          return 'asdf';
+        });
+        
+        // console.log('#1 err:', err,' contract:',contract);
+        // console.log('#2 address:',address);
+        // this.state.web3.eth.getTransaction(transactionHash, (err, transaction) => {
+        //   console.log('#3 err:', err,' transaction:',transaction);
+        // })
+      }
     }
   }
 }

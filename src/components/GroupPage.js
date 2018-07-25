@@ -53,7 +53,7 @@ class GroupPage extends Component {
       })
   }
 
-  setParterObj(contractInstance, i) {
+  setPartnerObj(contractInstance, i) {
     let partnerObj = {};
     contractInstance.getMemberAtIndex.call(i).then((partnerAddress)=>{
       partnerObj.address = partnerAddress;
@@ -88,7 +88,7 @@ class GroupPage extends Component {
 
     susuContract.deployed().then((contractInstance) => {
       for(let i=0; i<this.state.groupSize; i++) {
-        this.setParterObj(contractInstance, i);
+        this.setPartnerObj(contractInstance, i);
       }
       return contractInstance;
     });
