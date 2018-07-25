@@ -95,10 +95,9 @@ class GroupPage extends Component {
       this.setState({contribAmt:contribAmt});
     })
 
-    loadedContract.getNumberOfMembersNeeded((err, groupSizeBig)=>{
+    loadedContract.getManyMembers((err, groupSizeBig)=>{
       let bigNumber = new BigNumber(groupSizeBig);
       const groupSize = bigNumber.toNumber();
-      console.log('groupSize:',groupSize);
       this.setState({groupSize:groupSize});
     })
 
