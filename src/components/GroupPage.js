@@ -35,7 +35,7 @@ class GroupPage extends Component {
       member1Contrib: 0.0,
       member2Contrib: 0.0,
       member3Contrib: 0.0,
-      amIOwner: false,
+      ownerAddress: '',
       partnerObjects: [],
       contractAddress: props.match.params.contractAddress
     }
@@ -83,7 +83,7 @@ class GroupPage extends Component {
     });
 
     susuContract.owner((err, ownerAddress)=>{
-      this.setState({amIOwner:this.state.myAddress===ownerAddress});
+      this.setState({ownerAddress:ownerAddress});
       susuContract.getManyMembers((err, manyMembersBig)=>{
         let bigNumber = new BigNumber(manyMembersBig);
         const manyMembers = bigNumber.toNumber();
@@ -108,7 +108,7 @@ class GroupPage extends Component {
   }
 
   render() {
-    let isOwner = this.state.amIOwner;
+    let isOwner = this.state.ownerAddress===this.state.myAddress;
     let isGroupFull = this.isGroupFull();
     let isGroupTerminated = false;
     let isMember = this.isMember();
@@ -161,7 +161,7 @@ class GroupPage extends Component {
           key={keyId++} // Required for ES6/React(?) array items
           myAddress={this.state.myAddress}
           partnerAddress={partnerObj.address}
-          isOwner={this.state.amIOwner}
+          isOwner={this.state.ownerAddress===partnerObj.address}
           partnerContrib={partnerObj.contrib}
           contractContrib={this.state.contribAmt}
         />
