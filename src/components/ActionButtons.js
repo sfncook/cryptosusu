@@ -12,8 +12,9 @@ class ActionButtons extends Component {
   }
 
   render() {
+    const iOwe = this.props.myContrib < this.props.contribAmt;
     let btns = [];
-    let contributeBtn = <button key='contributeBtn' onClick={(e)=>{this.clickContribute(e)}} className="btn-contribute" type="button">Pay Your Share</button>;
+    let contributeBtn = <button key='contributeBtn' onClick={(e)=>{this.clickContribute(e)}} className={iOwe ? 'btn-contribute' : 'btn-contribute btn-disabled'} type="button" disabled={!iOwe}>Pay Your Share</button>;
     let leaveBtn = <button key='leaveBtn' onClick={(e)=>{this.clickLeave(e)}} className="btn-leave" type="button">Leave Group</button>;
     let payOutBtn = <button key='payOutBtn' onClick={(e)=>{this.clickPayOut(e)}} className="btn-pay" type="button">Pay Out</button>;
     let terminateBtn = <button key='terminateBtn' onClick={(e)=>{this.clickTerminate(e)}} className="btn-terminate" type="button">Terminate</button>;
@@ -108,6 +109,7 @@ ActionButtons.defaultProps = {
   myAddress: '',
   web3:null,
   contribAmt:0.0,
+  myContrib:0.0,
 };
 
 export default ActionButtons

@@ -29,7 +29,8 @@ class GroupPage extends Component {
       groupSize: 0,
       ownerAddress: '',
       partnerObjects: [],
-      contractAddress: props.match.params.contractAddress
+      contractAddress: props.match.params.contractAddress,
+      myContrib:0.0,
     }
   }
 
@@ -49,13 +50,19 @@ class GroupPage extends Component {
   }
 
   instantiateContract() {
-    let _this = this;
-    this.state.web3.eth.getAccounts(function(error, accounts) {
-      _this.setState({myAddress: accounts[0]});
-    });
-
     const susuContract = this.state.web3.eth.contract(SusuContract.abi).at(this.state.contractAddress);
     this.setState({susuContract:susuContract});
+
+    let _this = this;
+    this.state.web3.eth.getAccounts(function(error, accounts) {
+      const myAddress = accounts[0];
+      _this.setState({myAddress: myAddress});
+      susuContract.getContributionForMember(myAddress, (err, contribAmtWei)=>{
+        let bigNumber = new BigNumber(contribAmtWei);
+        const contribAmt = _this.state.web3.fromWei(bigNumber, 'ether').toNumber();
+        _this.setState({myContrib:contribAmt});
+      });
+    });
 
     // init partner objects array
     for(let i=0; i<this.state.groupSize; i++) {
@@ -92,7 +99,6 @@ class GroupPage extends Component {
             partnerObjects.push(newPartnerObj);
             this.setState({partnerObjects:partnerObjects});
             this.state.susuContract.getMemberAtIndex(i, this.setMemberAddressCallback(i));
-            this.state.susuContract.getContributionForMember(i, this.setMemberContribCallback(i));
           }
         });
       });
@@ -127,6 +133,7 @@ class GroupPage extends Component {
             myAddress={this.state.myAddress}
             web3={this.state.web3}
             contribAmt={this.state.contribAmt}
+            myContrib={this.state.myContrib}
           />
 
         </div>
@@ -139,6 +146,7 @@ class GroupPage extends Component {
       let partnerObjects = this.state.partnerObjects;
       partnerObjects[partnerIndex].address = partnerAddress;
       this.setState({partnerObjects:partnerObjects});
+      this.state.susuContract.getContributionForMember(partnerAddress, this.setMemberContribCallback(partnerIndex));
     }
   }
 
