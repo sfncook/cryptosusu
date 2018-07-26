@@ -69,7 +69,7 @@ class DeployPage extends Component {
     const susuContract = contract(SusuContract);
     const { unlinked_binary, abi } = susuContract;
     const newContract = this.state.web3.eth.contract(abi)
-    const options = { from: this.state.web3.eth.accounts[0], data: unlinked_binary, gas: 10000000 }
+    const options = { from: this.state.web3.eth.accounts[0], data: unlinked_binary, gas: 2000000 }
 
     const groupSize = document.getElementById('group_size').value;
     const groupName = document.getElementById('group_name').value;

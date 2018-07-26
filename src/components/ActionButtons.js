@@ -3,6 +3,13 @@ import React, { Component } from 'react'
 import '../App.css'
 
 class ActionButtons extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isJoining:false,
+      isError:false,
+    }
+  }
 
   render() {
     let btns = [];
@@ -34,7 +41,9 @@ class ActionButtons extends Component {
 
     return (
       <div className="pure-u-1-1">
-        {btns}
+        <h1 hidden={!this.state.isJoining} className={"please-wait"}>Please wait</h1>
+        <h1 hidden={!this.state.isError} className={'error'}>ERRORS exist! Please checkout JS console</h1>
+        <div>{btns}</div>
       </div>
     );
   }// render()
@@ -61,9 +70,18 @@ class ActionButtons extends Component {
 
   clickJoin(e) {
     e.preventDefault();
+    this.setState({isJoining:true});
     this.props.susuContract.joinGroup(
       {from:this.props.myAddress, gas:60000},
-      (err, response)=>{console.log('err:',err,' response:',response);}
+      (err)=>{
+        this.setState({isJoining:false});
+        if(typeof err === 'undefined' || !err) {
+          location.reload();
+        } else {
+          this.setState({isError:true});
+          console.error(err);
+        }
+      }
     );
   }
 }
