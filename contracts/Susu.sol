@@ -98,7 +98,7 @@ contract Susu is Ownable {
     function contribute() public payable {
         require(msg.value == contribAmtWei);
         require(isRecipient(msg.sender));
-        require(membersJoined == members.length);
+//        require(membersJoined == members.length);
 
         TrackPayment();
     }

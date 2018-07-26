@@ -53,18 +53,22 @@ class ActionButtons extends Component {
     e.preventDefault();
     this.setState({isLoading:true});
 
-    var send = this.props.web3.eth.sendTransaction(
+    this.props.web3.eth.sendTransaction(
       {
         from:this.props.myAddress,
-        to:'0x91bb331003c42bcc7caa089b9ecd7943783103d3',
+        to:this.props.susuContract.address,
         value:this.props.web3.toWei(this.props.contribAmt, "ether"),
         gas:60000
       },
-      (err,response)=>{
-        console.log('err:',err,' response:',response);
-      }
-      );
-    console.log('send:',send);
+      (err)=>{
+        this.setState({isLoading:false});
+        if(typeof err === 'undefined' || !err) {
+          location.reload();
+        } else {
+          this.setState({isError:true});
+          console.error(err);
+        }
+      });
   }
 
   clickLeave(e) {
