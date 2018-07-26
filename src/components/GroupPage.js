@@ -134,12 +134,26 @@ class GroupPage extends Component {
             web3={this.state.web3}
             contribAmt={this.state.contribAmt}
             myContrib={this.state.myContrib}
+            isReadyToPayout={this.isReadyToPayout()}
           />
 
         </div>
       </main>
     );
   }// render()
+
+  isReadyToPayout() {
+    if(this.state.manyMembers===this.state.groupSize) {
+      for(let partnerObj of this.state.partnerObjects) {
+        if(partnerObj.contrib<this.state.contribAmt) {
+          return false;
+        }
+      }
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   setMemberAddressCallback(partnerIndex){
     return (err, partnerAddress)=>{

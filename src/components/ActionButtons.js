@@ -15,9 +15,9 @@ class ActionButtons extends Component {
     const iOwe = this.props.myContrib < this.props.contribAmt;
     let btns = [];
     let contributeBtn = <button key='contributeBtn' onClick={(e)=>{this.clickContribute(e)}} className={iOwe ? 'btn-contribute' : 'btn-contribute btn-disabled'} type="button" disabled={!iOwe}>Pay Your Share</button>;
-    let leaveBtn = <button key='leaveBtn' onClick={(e)=>{this.clickLeave(e)}} className="btn-leave" type="button">Leave Group</button>;
-    let payOutBtn = <button key='payOutBtn' onClick={(e)=>{this.clickPayOut(e)}} className="btn-pay" type="button">Pay Out</button>;
-    let terminateBtn = <button key='terminateBtn' onClick={(e)=>{this.clickTerminate(e)}} className="btn-terminate" type="button">Terminate</button>;
+    // let leaveBtn = <button key='leaveBtn' onClick={(e)=>{this.clickLeave(e)}} className="btn-leave" type="button">Leave Group</button>;
+    let payOutBtn = <button key='payOutBtn' onClick={(e)=>{this.clickPayOut(e)}} className={this.props.isReadyToPayout ? 'btn-pay' : 'btn-pay btn-disabled'} disabled={!this.props.isReadyToPayout} type="button">Pay Out</button>;
+    // let terminateBtn = <button key='terminateBtn' onClick={(e)=>{this.clickTerminate(e)}} className="btn-terminate" type="button">Terminate</button>;
     let joinBtn = <button key='joinBtn' onClick={(e)=>{this.clickJoin(e)}} className="btn-join" type="button">Join</button>;
 
     if(!this.props.isGroupFull && !this.props.isMember){
@@ -26,17 +26,17 @@ class ActionButtons extends Component {
       btns.push(<h1 key='full'>Group is FULL</h1>);
     } else if(!this.props.isGroupFull && this.props.isMember) {
       btns.push(contributeBtn);
-      btns.push(leaveBtn);
+      // btns.push(leaveBtn);
       if(this.props.isOwner) {
         btns.push(payOutBtn);
-        btns.push(terminateBtn);
+        // btns.push(terminateBtn);
       }
     } else if(this.props.isGroupFull && this.props.isMember) {
       btns.push(contributeBtn);
-      btns.push(leaveBtn);
+      // btns.push(leaveBtn);
       if(this.props.isOwner) {
         btns.push(payOutBtn);
-        btns.push(terminateBtn);
+        // btns.push(terminateBtn);
       }
     }
 
@@ -114,6 +114,7 @@ ActionButtons.defaultProps = {
   web3:null,
   contribAmt:0.0,
   myContrib:0.0,
+  isReadyToPayout:false,
 };
 
 export default ActionButtons
