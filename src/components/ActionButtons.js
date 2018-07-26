@@ -78,7 +78,19 @@ class ActionButtons extends Component {
 
   clickPayOut(e) {
     e.preventDefault();
-    console.log('payout clicked');
+    this.setState({isLoading:true});
+    this.props.susuContract.payOut(
+      {from:this.props.myAddress, gas:100000},
+      (err, response)=>{
+        this.setState({isLoading:false});
+        if(typeof err === 'undefined' || !err) {
+          location.reload();
+        } else {
+          this.setState({isError:true});
+          console.error(err);
+        }
+      }
+    );
   }
 
   clickTerminate(e) {
