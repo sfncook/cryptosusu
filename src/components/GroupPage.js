@@ -57,8 +57,6 @@ class GroupPage extends Component {
   }
 
   instantiateContract() {
-    // const contract = require('truffle-contract');
-
     let _this = this;
     this.state.web3.eth.getAccounts(function(error, accounts) {
       _this.setState({myAddress: accounts[0]});
@@ -84,8 +82,8 @@ class GroupPage extends Component {
       this.setState({contribAmt:contribAmt});
     });
 
-    susuContract.amIOwner((err, amIOwner)=>{
-      this.setState({amIOwner:amIOwner});
+    susuContract.owner((err, ownerAddress)=>{
+      this.setState({amIOwner:this.state.myAddress===ownerAddress});
       susuContract.getManyMembers((err, manyMembersBig)=>{
         let bigNumber = new BigNumber(manyMembersBig);
         const manyMembers = bigNumber.toNumber();
