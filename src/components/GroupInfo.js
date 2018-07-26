@@ -13,10 +13,6 @@ class GroupInfo extends Component {
             <td>{this.props.groupName}</td>
           </tr>
           <tr>
-            <th>Payout Frequency:</th>
-            <td>{this.props.payoutFrequency}</td>
-          </tr>
-          <tr>
             <th>Contribution Amt (eth):</th>
             <td>{this.props.contribAmt}</td>
           </tr>
@@ -29,7 +25,6 @@ class GroupInfo extends Component {
 
 GroupInfo.defaultProps = {
   groupName: 'groupName not set',
-  payoutFrequency: 'payoutFrequency not set',
   contribAmt: -1,
 };
 

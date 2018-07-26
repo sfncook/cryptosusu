@@ -11,6 +11,7 @@ import '../App.css'
 import PartnerRow from "./PartnerRow";
 import GroupInfo from "./GroupInfo";
 import ActionButtons from "./ActionButtons";
+import PartnerRowEmpty from "./PartnerRowEmpty";
 
 class GroupPage extends Component {
 
@@ -19,22 +20,17 @@ class GroupPage extends Component {
 
     this.state = {
       web3: null,
+      susuContract: null,
       myAddress: '',
       contribAmt: 0,
-      groupName: 'GroupName-123-XYZ',
+      groupName: '---',
       payoutFrequency: 'monthly',
-      groupSize: 4,
-      member0Address: '',
-      member1Address: '',
-      member2Address: '',
-      member3Address: '',
-      member0Contrib: 0.0,
-      member1Contrib: 0.0,
-      member2Contrib: 0.0,
-      member3Contrib: 0.0,
-      owner: '0x0',
+      manyMembers: 0,
+      groupSize: 0,
+      ownerAddress: '',
       partnerObjects: [],
-      contractAddress: props.match.params.contractAddress
+      contractAddress: props.match.params.contractAddress,
+      myContrib:0.0,
     }
   }
 
@@ -48,36 +44,25 @@ class GroupPage extends Component {
         // Instantiate contract once web3 provided.
         this.instantiateContract();
       })
-      .catch(() => {
-        console.log('Error finding web3.');
+      .catch((err) => {
+        console.log('Error finding web3. err:',err);
       })
   }
 
-  setParterObj(contractInstance, i) {
-    let partnerObj = {};
-    contractInstance.getMemberAtIndex.call(i).then((partnerAddress)=>{
-      partnerObj.address = partnerAddress;
-      contractInstance.getContributionForMember.call(partnerAddress).then((partnerContribWei)=>{
-        let bigNumber = new BigNumber(partnerContribWei);
-        partnerObj.contrib = this.state.web3.fromWei(bigNumber, 'ether').toNumber();
-        let partnerObjects = this.state.partnerObjects;
-        partnerObjects[i] = partnerObj;
-        return this.setState({ partnerObjects: partnerObjects });
-      });
-      return partnerAddress;
-    });
-  }
-
   instantiateContract() {
-    const contract = require('truffle-contract');
+    const susuContract = this.state.web3.eth.contract(SusuContract.abi).at(this.state.contractAddress);
+    this.setState({susuContract:susuContract});
 
     let _this = this;
     this.state.web3.eth.getAccounts(function(error, accounts) {
-      _this.setState({myAddress: accounts[0]});
+      const myAddress = accounts[0];
+      _this.setState({myAddress: myAddress});
+      susuContract.getContributionForMember(myAddress, (err, contribAmtWei)=>{
+        let bigNumber = new BigNumber(contribAmtWei);
+        const contribAmt = _this.state.web3.fromWei(bigNumber, 'ether').toNumber();
+        _this.setState({myContrib:contribAmt});
+      });
     });
-
-    const susuContract = contract(SusuContract);
-    susuContract.setProvider(this.state.web3.currentProvider);
 
     // init partner objects array
     for(let i=0; i<this.state.groupSize; i++) {
@@ -86,43 +71,42 @@ class GroupPage extends Component {
       this.setState({ partnerObjects: partnerObjects });
     }
 
-    susuContract.deployed().then((contractInstance) => {
-      for(let i=0; i<this.state.groupSize; i++) {
-        this.setParterObj(contractInstance, i);
-      }
-      return contractInstance;
+    susuContract.groupName((err, groupName)=>{
+      this.setState({groupName:groupName});
     });
 
-    susuContract.deployed().then((instance) => {
-      return instance.groupSize.call();
-    }).then((result) => {
-      let groupSize = (new BigNumber(result)).toNumber();
-      return this.setState({ groupSize: groupSize });
-    }).catch(function(err) {
-      console.error('groupSize error:', err.message);
+    susuContract.contribAmtWei((err, contribAmtWei)=>{
+      let bigNumber = new BigNumber(contribAmtWei);
+      const contribAmt = this.state.web3.fromWei(bigNumber, 'ether').toNumber();
+      this.setState({contribAmt:contribAmt});
     });
 
-    susuContract.deployed().then((instance) => {
-      return instance.contribAmtWei.call();
-    }).then((result) => {
-      let bigNumber = new BigNumber(result);
-      let contribAmt = this.state.web3.fromWei(bigNumber, 'ether').toNumber();
-      return this.setState({ contribAmt: contribAmt});
-    }).catch(function(err) {
-      console.error('contribAmt error:', err.message);
-    });
+    susuContract.owner((err, ownerAddress)=>{
+      this.setState({ownerAddress:ownerAddress});
+      susuContract.getManyMembers((err, manyMembersBig)=>{
+        let bigNumber = new BigNumber(manyMembersBig);
+        const manyMembers = bigNumber.toNumber();
+        this.setState({manyMembers:manyMembers});
 
-    susuContract.deployed().then((instance) => {
-      return instance.owner.call();
-    }).then((result) => {
-      return this.setState({ owner: result});
-    }).catch(function(err) {
-      console.error('owner error:', err.message);
+        susuContract.groupSize((err, groupSizeBig)=>{
+          let bigNumber = new BigNumber(groupSizeBig);
+          const groupSize = bigNumber.toNumber();
+          this.setState({groupSize:groupSize});
+
+          for(var i=0; i<this.state.manyMembers; i++) {
+            let newPartnerObj = {};
+            let partnerObjects = this.state.partnerObjects;
+            partnerObjects.push(newPartnerObj);
+            this.setState({partnerObjects:partnerObjects});
+            this.state.susuContract.getMemberAtIndex(i, this.setMemberAddressCallback(i));
+          }
+        });
+      });
     });
   }
 
   render() {
-    let isOwner = this.isOwner(this.state.myAddress);
+    let isOwner = this.state.ownerAddress===this.state.myAddress;
     let isGroupFull = this.isGroupFull();
     let isGroupTerminated = false;
     let isMember = this.isMember();
@@ -131,23 +115,68 @@ class GroupPage extends Component {
       <main className="container">
         <div className="pure-g">
           <div className="pure-u-1-1" style={{paddingTop:'15px'}}>
-            <GroupInfo groupName={this.state.groupName} payoutFrequency={this.state.payoutFrequency} contribAmt={this.state.contribAmt}/>
+            <GroupInfo groupName={this.state.groupName} contribAmt={this.state.contribAmt}/>
             <table className="memberTable">
               <tbody>
               {this.createPartnerRows()}
+              {this.createEmptyPartnerRows()}
               </tbody>
             </table>
           </div>
 
-          <ActionButtons isOwner={isOwner} isGroupFull={isGroupFull} isGroupTerminated={isGroupTerminated} isMember={isMember}/>
+          <ActionButtons
+            isOwner={isOwner}
+            isGroupFull={isGroupFull}
+            isGroupTerminated={isGroupTerminated}
+            isMember={isMember}
+            susuContract={this.state.susuContract}
+            myAddress={this.state.myAddress}
+            web3={this.state.web3}
+            contribAmt={this.state.contribAmt}
+            myContrib={this.state.myContrib}
+            isReadyToPayout={this.isReadyToPayout()}
+          />
 
         </div>
       </main>
     );
   }// render()
 
+  isReadyToPayout() {
+    if(this.state.manyMembers===this.state.groupSize) {
+      for(let partnerObj of this.state.partnerObjects) {
+        if(partnerObj.contrib<this.state.contribAmt) {
+          return false;
+        }
+      }
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  setMemberAddressCallback(partnerIndex){
+    return (err, partnerAddress)=>{
+      let partnerObjects = this.state.partnerObjects;
+      partnerObjects[partnerIndex].address = partnerAddress;
+      this.setState({partnerObjects:partnerObjects});
+      this.state.susuContract.getContributionForMember(partnerAddress, this.setMemberContribCallback(partnerIndex));
+    }
+  }
+
+  setMemberContribCallback(partnerIndex){
+    return (err, partnerContribWei)=>{
+      let bigNumber = new BigNumber(partnerContribWei);
+      const contribAmt = this.state.web3.fromWei(bigNumber, 'ether').toNumber();
+      let partnerObjects = this.state.partnerObjects;
+      partnerObjects[partnerIndex].contrib = contribAmt;
+      this.setState({partnerObjects:partnerObjects});
+    }
+  }
+
   createPartnerRows() {
     let rows = [];
+
     let keyId = 1;
     for(let partnerObj of this.state.partnerObjects) {
       rows.push(
@@ -155,7 +184,7 @@ class GroupPage extends Component {
           key={keyId++} // Required for ES6/React(?) array items
           myAddress={this.state.myAddress}
           partnerAddress={partnerObj.address}
-          isOwner={this.isOwner(partnerObj.address)}
+          isOwner={this.state.ownerAddress===partnerObj.address}
           partnerContrib={partnerObj.contrib}
           contractContrib={this.state.contribAmt}
         />
@@ -163,20 +192,21 @@ class GroupPage extends Component {
     }
     return rows;
   }
+  createEmptyPartnerRows() {
+    let rows = [];
 
-  isOwner(memberAddress) {
-    return memberAddress === this.state.owner;
+    for(var i=0; i<(this.state.groupSize - this.state.manyMembers); i++) {
+      rows.push(
+        <PartnerRowEmpty
+          key={i} // Required for ES6/React(?) array items
+        />
+      );
+    }
+    return rows;
   }
 
   isGroupFull() {
-    let isGroupFull = true;
-    for(let partnerObj of this.state.partnerObjects) {
-      if(typeof partnerObj.address ===  'undefined') {
-        isGroupFull = false;
-        break;
-      }
-    }
-    return this.state.groupSize>0 && isGroupFull;
+    return this.state.manyMembers >= this.state.groupSize;
   }
 
   isMember() {
