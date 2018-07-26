@@ -6,7 +6,7 @@ class ActionButtons extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isJoining:false,
+      isLoading:false,
       isError:false,
     }
   }
@@ -41,7 +41,7 @@ class ActionButtons extends Component {
 
     return (
       <div className="pure-u-1-1">
-        <h1 hidden={!this.state.isJoining} className={"please-wait"}>Please wait</h1>
+        <h1 hidden={!this.state.isLoading} className={"please-wait"}>Please wait</h1>
         <h1 hidden={!this.state.isError} className={'error'}>ERRORS exist! Please checkout JS console</h1>
         <div>{btns}</div>
       </div>
@@ -50,7 +50,20 @@ class ActionButtons extends Component {
 
   clickContribute(e) {
     e.preventDefault();
-    console.log('contribute clicked');
+    this.setState({isLoading:true});
+
+    var send = this.props.web3.eth.sendTransaction(
+      {
+        from:this.props.myAddress,
+        to:'0x91bb331003c42bcc7caa089b9ecd7943783103d3',
+        value:this.props.web3.toWei(this.props.contribAmt, "ether"),
+        gas:60000
+      },
+      (err,response)=>{
+        console.log('err:',err,' response:',response);
+      }
+      );
+    console.log('send:',send);
   }
 
   clickLeave(e) {
@@ -70,11 +83,11 @@ class ActionButtons extends Component {
 
   clickJoin(e) {
     e.preventDefault();
-    this.setState({isJoining:true});
+    this.setState({isLoading:true});
     this.props.susuContract.joinGroup(
       {from:this.props.myAddress, gas:60000},
       (err)=>{
-        this.setState({isJoining:false});
+        this.setState({isLoading:false});
         if(typeof err === 'undefined' || !err) {
           location.reload();
         } else {
@@ -94,6 +107,7 @@ ActionButtons.defaultProps = {
   susuContract: null,
   myAddress: '',
   web3:null,
+  contribAmt:0.0,
 };
 
 export default ActionButtons

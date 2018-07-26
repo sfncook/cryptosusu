@@ -27,14 +27,6 @@ class GroupPage extends Component {
       payoutFrequency: 'monthly',
       manyMembers: 0,
       groupSize: 0,
-      member0Address: '',
-      member1Address: '',
-      member2Address: '',
-      member3Address: '',
-      member0Contrib: 0.0,
-      member1Contrib: 0.0,
-      member2Contrib: 0.0,
-      member3Contrib: 0.0,
       ownerAddress: '',
       partnerObjects: [],
       contractAddress: props.match.params.contractAddress
@@ -126,7 +118,16 @@ class GroupPage extends Component {
             </table>
           </div>
 
-          <ActionButtons isOwner={isOwner} isGroupFull={isGroupFull} isGroupTerminated={isGroupTerminated} isMember={isMember} susuContract={this.state.susuContract} myAddress={this.state.myAddress} web3={this.state.web3}/>
+          <ActionButtons
+            isOwner={isOwner}
+            isGroupFull={isGroupFull}
+            isGroupTerminated={isGroupTerminated}
+            isMember={isMember}
+            susuContract={this.state.susuContract}
+            myAddress={this.state.myAddress}
+            web3={this.state.web3}
+            contribAmt={this.state.contribAmt}
+          />
 
         </div>
       </main>
