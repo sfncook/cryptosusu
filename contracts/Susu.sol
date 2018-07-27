@@ -11,6 +11,7 @@ contract Susu is Ownable {
 
     string public groupName;
     uint256 public contribAmtWei;
+    uint8 public groupSize;
     address[] public members;
     uint public membersJoined;
     uint public memberIdxToPayNext;
@@ -22,13 +23,13 @@ contract Susu is Ownable {
         require(_groupSize < 100);
         groupName = _groupName;
         contribAmtWei = _contribAmtWei;
-        members.length = _groupSize;
-        members[0] = owner;
+        groupSize = _groupSize;
+        members.push(owner);
         membersJoined = 1;
         maxMembers = 100;
         memberIdxToPayNext = 0;
     }
-    
+
     function payOut() public payable onlyOwner {
         if(everyonePaid()) {
             resetBalances();
@@ -84,20 +85,21 @@ contract Susu is Ownable {
         return (msg.sender == owner);
     }
 
-    function getNumberOfMembersNeeded() public view returns(uint) {
+    function getManyMembers() public view returns(uint) {
         return members.length;
     }
     
     function joinGroup() public {
         require(!isRecipient(msg.sender));
-        members[membersJoined] = msg.sender;
-        membersJoined = membersJoined.add(1);
+        members.push(msg.sender);
+//        members[membersJoined] = msg.sender;
+//        membersJoined = membersJoined.add(1);
     }
 
     function contribute() public payable {
         require(msg.value == contribAmtWei);
         require(isRecipient(msg.sender));
-        require(membersJoined == members.length);
+//        require(membersJoined == members.length);
 
         TrackPayment();
     }
