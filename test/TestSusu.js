@@ -35,6 +35,19 @@ contract('Susu', function ([owner, donor]) {
         assert.equal(await susu.getMemberAtIndex(1), donor, "Donor should be 2nd member")
     })
 
+    it('does not allow people to join twice from the same address', async function () {
+        susu = await Susu.new(2, "Test", 1)
+        
+        try {   
+            await susu.joinGroup({from: donor})
+            await susu.joinGroup({from: donor})
+        } catch (error) {
+            err = error
+        }
+
+        assert.ok(err instanceof Error)
+    })
+
     it('does not allow contributions if one has not joined', async function () {
         susu = await Susu.new(2, "Test", 1)
         

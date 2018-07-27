@@ -89,6 +89,7 @@ contract Susu is Ownable {
     }
     
     function joinGroup() public {
+        require(!isRecipient(msg.sender));
         members[membersJoined] = msg.sender;
         membersJoined = membersJoined.add(1);
     }
