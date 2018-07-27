@@ -13,20 +13,18 @@ contract Susu is Ownable {
     uint256 public contribAmtWei;
     uint8 public groupSize;
     address[] public members;
-    uint public membersJoined;
     uint public memberIdxToPayNext;
     uint8 public maxMembers;
     mapping(address => uint) private currentContributions;
 
     constructor(uint8 _groupSize, string _groupName, uint256 _contribAmtWei) public {
         // Max number of members is 100. Arbitrary but should be smaller than max of uint8
-        require(_groupSize < 100);
+        maxMembers = 100;
+        require(_groupSize < maxMembers);
         groupName = _groupName;
         contribAmtWei = _contribAmtWei;
         groupSize = _groupSize;
         members.push(owner);
-        membersJoined = 1;
-        maxMembers = 100;
         memberIdxToPayNext = 0;
     }
 
@@ -92,14 +90,11 @@ contract Susu is Ownable {
     function joinGroup() public {
         require(!isRecipient(msg.sender));
         members.push(msg.sender);
-//        members[membersJoined] = msg.sender;
-//        membersJoined = membersJoined.add(1);
     }
 
     function contribute() public payable {
         require(msg.value == contribAmtWei);
         require(isRecipient(msg.sender));
-//        require(membersJoined == members.length);
 
         TrackPayment();
     }
@@ -121,8 +116,4 @@ contract Susu is Ownable {
     function () external payable {
         contribute();
     }
-    // function leaveGroup() public payable {
-    //     // TODO
-    // }
-
 }

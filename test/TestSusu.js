@@ -16,22 +16,14 @@ contract('Susu', function ([owner, donor]) {
         
         assert.equal(await susu.groupName(), "Test", "Group name should be 'Test'")
         assert.equal(await susu.contribAmtWei(), 1, "Contribution amount should be 1 wei")
-        assert.equal(await susu.getNumberOfMembersNeeded(), 2, "Number of members should be 2")
+        assert.equal(await susu.groupSize(), 2, "Number of members should be 2")
     })
 
     it('allows others to join the susu and tracks their address', async function () {
         susu = await Susu.new(2, "Test", 1)
         
         susu.joinGroup({from: donor})
-        assert.equal(await susu.membersJoined(), 2, "Group should have 2 members")
-        assert.equal(await susu.getMemberAtIndex(1), donor, "Donor should be 2nd member")
-    })
-
-    it('allows others to join the susu and tracks their address', async function () {
-        susu = await Susu.new(2, "Test", 1)
-        
-        susu.joinGroup({from: donor})
-        assert.equal(await susu.membersJoined(), 2, "Group should have 2 members")
+        assert.equal(await susu.getManyMembers(), 2, "Group should have 2 members")
         assert.equal(await susu.getMemberAtIndex(1), donor, "Donor should be 2nd member")
     })
 
