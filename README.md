@@ -100,7 +100,7 @@ _Presumably you have installed all the prerequisites detailed above including co
 # Testing
 We use [Truffle](https://truffleframework.com/docs/getting_started/testing) to test the contract.
 
-To run all tests w/out coverage:
+To run all tests first launch [Ganache](https://truffleframework.com/ganache), then:
 ```console
 $ truffle test
 Using network 'development'.
