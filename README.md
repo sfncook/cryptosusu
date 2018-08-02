@@ -98,17 +98,27 @@ _Presumably you have installed all the prerequisites detailed above including co
  I have found that Metamask does not like it when you restart Ganache because the transaction indexes get out of synch.  So anytime you restart Ganache make sure you "reset account" in the Metamask UI. (you'll have to look around the little Metamask UI for this feature)
  
 # Testing
-We use [Truffle](https://truffleframework.com/docs/getting_started/testing) and [solidity-coverage](https://github.com/sc-forks/solidity-coverage) for testing.  
+We use [Truffle](https://truffleframework.com/docs/getting_started/testing) to test the contract.
 
 To run all tests w/out coverage:
 ```console
-npm test
-```
+$ truffle test
+Using network 'development'.
 
-To run all tests and generate coverage:
-```console
-./node_modules/.bin/solidity-coverage
-```
+Compiling ./contracts/Susu.sol...
+Compiling zeppelin-solidity/contracts/math/SafeMath.sol...
+Compiling zeppelin-solidity/contracts/ownership/Ownable.sol...
 
-(Output excluded for brevity)  All tests in `./test/...` will be ran.  Test coverage procedures will temporarily create a directory named `./coverageEnv` but then delete that once tests are complete.  Test results will be stored in a (possibly new directory) named `./coverage`.  You can view the results in a pretty HTML page by opening the file `./coverage/lcov-report/index.html` in your browser.  (no need to start a webserver or anything, just open the file straight up in your browser) 
- 
+
+  Contract: Susu
+    ✓ has an owner
+    ✓ sets the constructor arguments correctly (174ms)
+    ✓ allows others to join the susu and tracks their address (274ms)
+    ✓ does not allow people to join twice from the same address (226ms)
+    ✓ does not allow contributions if one has not joined (153ms)
+    ✓ does track contributions (369ms)
+    ✓ pays out correctly (514ms)
+
+
+  7 passing (3s)
+```
