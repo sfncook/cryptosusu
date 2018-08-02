@@ -98,7 +98,14 @@ _Presumably you have installed all the prerequisites detailed above including co
  I have found that Metamask does not like it when you restart Ganache because the transaction indexes get out of synch.  So anytime you restart Ganache make sure you "reset account" in the Metamask UI. (you'll have to look around the little Metamask UI for this feature)
  
 # Testing
-We use [Truffle](https://truffleframework.com/docs/getting_started/testing) and [solidity-coverage](https://github.com/sc-forks/solidity-coverage) for testing.  To run all tests and generate coverage simply run this command:
+We use [Truffle](https://truffleframework.com/docs/getting_started/testing) and [solidity-coverage](https://github.com/sc-forks/solidity-coverage) for testing.  
+
+To run all tests w/out coverage:
+```console
+npm test
+```
+
+To run all tests and generate coverage:
 ```console
 ./node_modules/.bin/solidity-coverage
 ```
