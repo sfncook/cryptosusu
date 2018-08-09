@@ -31,6 +31,7 @@ class GroupPage extends Component {
       partnerObjects: [],
       contractAddress: props.match.params.contractAddress,
       myContrib:0.0,
+      memberAddrToPayNext:0,
     }
   }
 
@@ -75,6 +76,17 @@ class GroupPage extends Component {
       this.setState({groupName:groupName});
     });
 
+    susuContract.memberIdxToPayNext((err, memberIdxToPayNextBig)=>{
+      let bigNumber = new BigNumber(memberIdxToPayNextBig);
+      const memberIdxToPayNext = bigNumber.toNumber();
+      console.log('memberIdxToPayNext:',memberIdxToPayNext);
+
+      susuContract.getMemberAtIndex(memberIdxToPayNext, (err, memberAddrToPayNext)=>{
+        console.log('memberAddrToPayNext:',memberAddrToPayNext);
+        this.setState({memberAddrToPayNext:memberAddrToPayNext});
+      });
+    });
+
     susuContract.contribAmtWei((err, contribAmtWei)=>{
       let bigNumber = new BigNumber(contribAmtWei);
       const contribAmt = this.state.web3.fromWei(bigNumber, 'ether').toNumber();
@@ -110,6 +122,7 @@ class GroupPage extends Component {
     let isGroupFull = this.isGroupFull();
     let isGroupTerminated = false;
     let isMember = this.isMember();
+    let isMemberToPayNext = this.state.memberAddrToPayNext===this.state.myAddress;
 
     return (
       <main className="container">
@@ -135,6 +148,7 @@ class GroupPage extends Component {
             contribAmt={this.state.contribAmt}
             myContrib={this.state.myContrib}
             isReadyToPayout={this.isReadyToPayout()}
+            isMemberToPayNext={isMemberToPayNext}
           />
 
         </div>
@@ -187,6 +201,7 @@ class GroupPage extends Component {
           isOwner={this.state.ownerAddress===partnerObj.address}
           partnerContrib={partnerObj.contrib}
           contractContrib={this.state.contribAmt}
+          isMemberToPayNext={this.state.memberAddrToPayNext===partnerObj.address}
         />
       );
     }

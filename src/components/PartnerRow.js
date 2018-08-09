@@ -12,6 +12,7 @@ class PartnerRow extends Component {
         <td className={this.getTdContribColor(this.props.partnerContrib)}>
           {this.props.partnerContrib} ether
         </td>
+        <td>{this.props.isMemberToPayNext?'(next) ':''}</td>
       </tr>
     );
   }// render()
@@ -32,7 +33,8 @@ PartnerRow.defaultProps = {
   partnerAddress: 'partnerAddress - not set',
   isOwner: false,
   partnerContrib: 0.0,
-  contractContrib: 1.0
+  contractContrib: 1.0,
+  isMemberToPayNext:false,
 };
 
 export default PartnerRow

@@ -127,6 +127,7 @@ ActionButtons.defaultProps = {
   contribAmt:0.0,
   myContrib:0.0,
   isReadyToPayout:false,
+  isMemberToPayNext:false,
 };
 
 export default ActionButtons
