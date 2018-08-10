@@ -15,28 +15,17 @@ class ActionButtons extends Component {
     const iOwe = this.props.myContrib < this.props.contribAmt;
     let btns = [];
     let contributeBtn = <button key='contributeBtn' onClick={(e)=>{this.clickContribute(e)}} className={iOwe ? 'btn-contribute' : 'btn-contribute btn-disabled'} type="button" disabled={!iOwe}>Pay Your Share</button>;
-    // let leaveBtn = <button key='leaveBtn' onClick={(e)=>{this.clickLeave(e)}} className="btn-leave" type="button">Leave Group</button>;
-    let payOutBtn = <button key='payOutBtn' onClick={(e)=>{this.clickPayOut(e)}} className={this.props.isReadyToPayout ? 'btn-pay' : 'btn-pay btn-disabled'} disabled={!this.props.isReadyToPayout} type="button">Pay Out</button>;
-    // let terminateBtn = <button key='terminateBtn' onClick={(e)=>{this.clickTerminate(e)}} className="btn-terminate" type="button">Terminate</button>;
+    let pullPayOutBtn = <button key='pullPayOutBtn' onClick={(e)=>{this.clickPullPayOut(e)}} className={this.props.isReadyToPayout ? 'btn-pay' : 'btn-pay btn-disabled'} disabled={!this.props.isReadyToPayout} type="button">Pull Pay Out</button>;
     let joinBtn = <button key='joinBtn' onClick={(e)=>{this.clickJoin(e)}} className="btn-join" type="button">Join</button>;
 
     if(!this.props.isGroupFull && !this.props.isMember){
       btns.push(joinBtn);
     } else if(this.props.isGroupFull && !this.props.isMember) {
       btns.push(<h1 key='full'>Group is FULL</h1>);
-    } else if(!this.props.isGroupFull && this.props.isMember) {
+    } else if(this.props.isMember) {
       btns.push(contributeBtn);
-      // btns.push(leaveBtn);
-      if(this.props.isOwner) {
-        btns.push(payOutBtn);
-        // btns.push(terminateBtn);
-      }
-    } else if(this.props.isGroupFull && this.props.isMember) {
-      btns.push(contributeBtn);
-      // btns.push(leaveBtn);
-      if(this.props.isOwner) {
-        btns.push(payOutBtn);
-        // btns.push(terminateBtn);
+      if(this.props.isMemberToPayNext) {
+        btns.push(pullPayOutBtn);
       }
     }
 
@@ -71,17 +60,12 @@ class ActionButtons extends Component {
       });
   }
 
-  clickLeave(e) {
-    e.preventDefault();
-    console.log('leave clicked');
-  }
-
-  clickPayOut(e) {
+  clickPullPayOut(e) {
     e.preventDefault();
     this.setState({isLoading:true});
-    this.props.susuContract.payOut(
+    this.props.susuContract.pullPayOut(
       {from:this.props.myAddress, gas:100000},
-      (err, response)=>{
+      (err)=>{
         this.setState({isLoading:false});
         if(typeof err === 'undefined' || !err) {
           location.reload();
@@ -91,11 +75,6 @@ class ActionButtons extends Component {
         }
       }
     );
-  }
-
-  clickTerminate(e) {
-    e.preventDefault();
-    console.log('terminate clicked');
   }
 
   clickJoin(e) {
