@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import contract from 'truffle-contract'
 
-import SusuContract from '../../build/contracts/Susu.json'
+import SusuContract from '../../build/contracts/SusuOrig.json'
 import getWeb3 from '../utils/getWeb3'
 
 import '../App.css'
