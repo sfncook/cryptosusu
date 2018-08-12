@@ -5,6 +5,14 @@ contract SusuDataStore {
     uint256 public contribAmtWei;
     uint8 public groupSize;
     address[] public members;
-    uint public memberIdxToPayNext;
+    uint public memberIdxToPayNext = 0;
     mapping(address => uint) public currentContributions;
+
+    constructor(uint8 _groupSize, string _groupName, uint256 _contribAmtWei) public {
+        groupName = _groupName;
+        contribAmtWei = _contribAmtWei;
+        groupSize = _groupSize;
+    }
+
+
 }

@@ -9,14 +9,10 @@ contract Susu {
     SusuDataStore public susuDataStore;
     uint8 constant public MAX_MEMBERS = 5;
 
-    constructor(address _susuDataStoreAddress, uint8 _groupSize) public {
-        require(_groupSize < MAX_MEMBERS);
+    constructor(address _susuDataStoreAddress) public {
         susuDataStore = SusuDataStore(_susuDataStoreAddress);
-//        groupName = _groupName;
-//        contribAmtWei = _contribAmtWei;
-//        groupSize = _groupSize;
-//        members.push(owner);
-//        memberIdxToPayNext = 0;
+        require(susuDataStore.groupSize() <= MAX_MEMBERS);
+        //members.push(owner);
     }
 
 
