@@ -46,7 +46,6 @@ class GroupPage extends Component {
 
         // Instantiate contract once web3 provided.
         this.instantiateContract();
-        this.instantiateParentContract();
       })
       .catch((err) => {
         console.log('Error finding web3. err:',err);
@@ -54,14 +53,26 @@ class GroupPage extends Component {
   }
 
   instantiateParentContract() {
-    const susuParentContract = this.state.web3.eth.contract(SusuParentContract.abi).at(this.state.contractAddress);
-    this.setState({susuParentContract:susuParentContract});
-    console.log('susuParentContract:',susuParentContract);
+    const contract = require("truffle-contract");
+    const MyContract = contract(SusuParentContract);
+    const provider = new this.state.web3.providers.HttpProvider("http://localhost:7545");
+    MyContract.setProvider(provider);
 
-    // susuParentContract.groupName((err, groupName)=>{
-    //   this.setState({groupName:groupName});
-    // });
+    MyContract.deployed().then(function(instance) {
+      // console.log('instance:',instance);
+      // const key = 'this is a key';
+      // const groupSize = 4;
+      // const groupName = 'newName';
+      // const contribAmtWei = 10000000000000;
+      return instance.createSusu.call('key', 2, 'name', 1);
+    }).then((r)=>{console.log('r:',r);});
   }
+
+  // susuParentCallback() {
+  //   return (err, result) => {
+  //     console.log('err:',err,' result:',result);
+  //   }
+  // }
 
   instantiateContract() {
     const susuContract = this.state.web3.eth.contract(SusuContract.abi).at(this.state.contractAddress);
@@ -92,10 +103,8 @@ class GroupPage extends Component {
     susuContract.memberIdxToPayNext((err, memberIdxToPayNextBig)=>{
       let bigNumber = new BigNumber(memberIdxToPayNextBig);
       const memberIdxToPayNext = bigNumber.toNumber();
-      console.log('memberIdxToPayNext:',memberIdxToPayNext);
 
       susuContract.getMemberAtIndex(memberIdxToPayNext, (err, memberAddrToPayNext)=>{
-        console.log('memberAddrToPayNext:',memberAddrToPayNext);
         this.setState({memberAddrToPayNext:memberAddrToPayNext});
       });
     });
@@ -172,7 +181,7 @@ class GroupPage extends Component {
 
   testSusuParent(e) {
     e.preventDefault();
-    console.log('click');
+    this.instantiateParentContract();
   }
 
   isReadyToPayout() {
