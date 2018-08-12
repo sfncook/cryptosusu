@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 
 import SusuContract from '../../build/contracts/SusuOrig.json'
+import SusuParentContract from '../../build/contracts/SusuParent.json'
 import getWeb3 from '../utils/getWeb3'
 import {BigNumber} from 'bignumber.js';
 
@@ -21,6 +22,7 @@ class GroupPage extends Component {
     this.state = {
       web3: null,
       susuContract: null,
+      susuParentContract: null,
       myAddress: '',
       contribAmt: 0,
       groupName: '---',
@@ -44,10 +46,21 @@ class GroupPage extends Component {
 
         // Instantiate contract once web3 provided.
         this.instantiateContract();
+        this.instantiateParentContract();
       })
       .catch((err) => {
         console.log('Error finding web3. err:',err);
       })
+  }
+
+  instantiateParentContract() {
+    const susuParentContract = this.state.web3.eth.contract(SusuParentContract.abi).at(this.state.contractAddress);
+    this.setState({susuParentContract:susuParentContract});
+    console.log('susuParentContract:',susuParentContract);
+
+    // susuParentContract.groupName((err, groupName)=>{
+    //   this.setState({groupName:groupName});
+    // });
   }
 
   instantiateContract() {
@@ -127,6 +140,7 @@ class GroupPage extends Component {
     return (
       <main className="container">
         <div className="pure-g">
+          <button onClick={(e)=>{this.testSusuParent(e)}} className="btn-join" type="button">TEST SUSU PARENT</button>
           <div className="pure-u-1-1" style={{paddingTop:'15px'}}>
             <GroupInfo groupName={this.state.groupName} contribAmt={this.state.contribAmt}/>
             <table className="memberTable">
@@ -155,6 +169,11 @@ class GroupPage extends Component {
       </main>
     );
   }// render()
+
+  testSusuParent(e) {
+    e.preventDefault();
+    console.log('click');
+  }
 
   isReadyToPayout() {
     if(this.state.manyMembers===this.state.groupSize) {
