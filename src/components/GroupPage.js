@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 
-import SusuContract from '../../build/contracts/SusuOrig.json'
+import SusuOrigContract from '../../build/contracts/SusuOrig.json'
 import SusuParentContract from '../../build/contracts/SusuParent.json'
+import SusuContract from '../../build/contracts/Susu.json'
 import getWeb3 from '../utils/getWeb3'
 import {BigNumber} from 'bignumber.js';
 
@@ -59,23 +60,16 @@ class GroupPage extends Component {
     MyContract.setProvider(provider);
 
     MyContract.deployed().then(function(instance) {
-      // console.log('instance:',instance);
-      // const key = 'this is a key';
-      // const groupSize = 4;
-      // const groupName = 'newName';
-      // const contribAmtWei = 10000000000000;
       return instance.createSusu.call('key', 2, 'name', 1);
-    }).then((r)=>{console.log('r:',r);});
+    }).then((susuContractAddress)=>{
+      console.log('susuContractAddress:',susuContractAddress);
+      const susuContract = this.state.web3.eth.contract(SusuContract.abi).at(susuContractAddress);
+      console.log('susuContract:',susuContract);
+    });
   }
 
-  // susuParentCallback() {
-  //   return (err, result) => {
-  //     console.log('err:',err,' result:',result);
-  //   }
-  // }
-
   instantiateContract() {
-    const susuContract = this.state.web3.eth.contract(SusuContract.abi).at(this.state.contractAddress);
+    const susuContract = this.state.web3.eth.contract(SusuOrigContract.abi).at(this.state.contractAddress);
     this.setState({susuContract:susuContract});
 
     let _this = this;
