@@ -36,6 +36,13 @@ contract Susu is Ownable {
         }
     }
 
+    function pullPayOut() public payable {
+        require(msg.sender == members[memberIdxToPayNext]);
+        resetBalances();
+        iterateMemberToPayNext();
+        msg.sender.transfer(members.length * contribAmtWei);
+    }
+
     function everyonePaid() private view returns (bool) {
         for (uint i = 0; i < members.length ; i++)
         {

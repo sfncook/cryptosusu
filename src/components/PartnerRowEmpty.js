@@ -10,6 +10,7 @@ class PartnerRowEmpty extends Component {
         <td></td>
         <td>(Empty)</td>
         <td></td>
+        <td></td>
       </tr>
     );
   }// render()
