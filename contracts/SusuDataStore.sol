@@ -14,5 +14,12 @@ contract SusuDataStore {
         groupSize = _groupSize;
     }
 
+    function addMember(address _member) public returns(address[]){
+        members.push(_member);
+    }
+
+    function getGroupName() public view returns(string) {
+        return groupName;
+    }
 
 }

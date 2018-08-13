@@ -61,10 +61,8 @@ class GroupPage extends Component {
 
     MyContract.deployed().then(function(instance) {
       return instance.createSusu.call('key', 2, 'name', 1);
-    }).then((susuContractAddress)=>{
-      console.log('susuContractAddress:',susuContractAddress);
-      const susuContract = this.state.web3.eth.contract(SusuContract.abi).at(susuContractAddress);
-      console.log('susuContract:',susuContract);
+    }).then(()=>{
+
     });
   }
 
