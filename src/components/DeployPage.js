@@ -5,6 +5,7 @@ import SusuContract from '../../build/contracts/SusuOrig.json'
 import getWeb3 from '../utils/getWeb3'
 
 import '../App.css'
+import SusuParentContract from "../../build/contracts/SusuParent";
 
 class DeployPage extends Component {
 
@@ -14,6 +15,7 @@ class DeployPage extends Component {
     this.state = {
       web3: null,
       isLoading: false,
+      susuParentContract: null,
     }
   }
 
@@ -23,10 +25,20 @@ class DeployPage extends Component {
         this.setState({
           web3: results.web3
         });
+
+        this.instantiateSusuContract();
       })
       .catch(() => {
         console.log('Error finding web3.');
       })
+  }
+
+  instantiateSusuContract() {
+    const contract = require("truffle-contract");
+    const susuParentContract = contract(SusuParentContract);
+    const provider = new this.state.web3.providers.HttpProvider("http://127.0.0.1:7545");
+    susuParentContract.setProvider(provider);
+    this.setState({susuParentContract: susuParentContract});
   }
 
   render() {
@@ -36,6 +48,9 @@ class DeployPage extends Component {
       <main className="container">
         <div className="pure-g">
           <div className="pure-u-1-1" style={{paddingTop:'15px'}}>
+            <button onClick={(e)=>{this.createSusu(e)}} className="btn-join" type="button">CREATE SUSU PARENT</button>
+            <button onClick={(e)=>{this.getSusu(e)}} className="btn-join" type="button">GET SUSU</button>
+            <button onClick={(e)=>{this.getSusuName(e)}} className="btn-join" type="button">GET SUSU NAME</button>
             <table className="groupTable">
               <tbody>
               <tr id="memberTemplate">
@@ -62,6 +77,28 @@ class DeployPage extends Component {
       </main>
     );
   }// render()
+
+
+  createSusu(e) {
+    e.preventDefault();
+    this.state.susuParentContract.deployed().then((instance)=>{
+      return instance.createSusu.call('key', 2, 'name', 1);
+    }).then((result)=>{console.log('result:',result);});
+  }
+
+  getSusu(e) {
+    e.preventDefault();
+    this.state.susuParentContract.deployed().then((instance)=>{
+      return instance.getSusu.call('key');
+    }).then((result)=>{console.log('result:',result);});
+  }
+
+  getSusuName(e) {
+    e.preventDefault();
+    this.state.susuParentContract.deployed().then((instance)=>{
+      return instance.getGroupName.call('key');
+    }).then((result)=>{console.log('result:',result);});
+  }
 
   clickCreate(e) {
     e.preventDefault();
