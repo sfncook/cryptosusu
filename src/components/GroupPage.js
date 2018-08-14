@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 
 import SusuOrigContract from '../../build/contracts/SusuOrig.json'
 import SusuParentContract from '../../build/contracts/SusuParent.json'
-import SusuContract from '../../build/contracts/Susu.json'
 import getWeb3 from '../utils/getWeb3'
 import {BigNumber} from 'bignumber.js';
 
@@ -56,14 +55,30 @@ class GroupPage extends Component {
   instantiateParentContract() {
     const contract = require("truffle-contract");
     const MyContract = contract(SusuParentContract);
-    const provider = new this.state.web3.providers.HttpProvider("http://localhost:7545");
+    const provider = new this.state.web3.providers.HttpProvider("http://127.0.0.1:7545");
     MyContract.setProvider(provider);
-
-    MyContract.deployed().then(function(instance) {
-      return instance.createSusu.call('key', 2, 'name', 1);
-    }).then(()=>{
-
+    MyContract.deployed().then((instance)=>{
+      return instance.createSusu.call('key', 2, 'name', 1).then((response)=>{
+        instance.getGroupName.call('key');
+        // console.log('instance:',instance);
+        // return instance.getGroupName.call('key').then((response)=>{
+        //   console.log('response:',response);
+        // });
+      });
     });
+
+    // MyContract.deployed().then(function(instance) {
+    //   return instance.createSusu('key', 2, 'name', 1).then((response)=>{
+    //     // console.log('instance:',instance);
+    //   });
+    // });
+    //   .then(()=>{
+    //   MyContract.deployed().then(function(instance) {
+    //     console.log('instance:',instance);
+    //     // instance.getGroupName('key');
+    //     // return instance.getGroupName.call('key');
+    //   })
+    // });
   }
 
   instantiateContract() {
