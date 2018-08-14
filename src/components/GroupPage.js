@@ -46,39 +46,19 @@ class GroupPage extends Component {
 
         // Instantiate contract once web3 provided.
         this.instantiateContract();
+        this.instantiateSusuContract();
       })
       .catch((err) => {
         console.log('Error finding web3. err:',err);
       })
   }
 
-  instantiateParentContract() {
+  instantiateSusuContract() {
     const contract = require("truffle-contract");
-    const MyContract = contract(SusuParentContract);
+    const susuParentContract = contract(SusuParentContract);
     const provider = new this.state.web3.providers.HttpProvider("http://127.0.0.1:7545");
-    MyContract.setProvider(provider);
-    MyContract.deployed().then((instance)=>{
-      return instance.createSusu.call('key', 2, 'name', 1).then((response)=>{
-        instance.getGroupName.call('key');
-        // console.log('instance:',instance);
-        // return instance.getGroupName.call('key').then((response)=>{
-        //   console.log('response:',response);
-        // });
-      });
-    });
-
-    // MyContract.deployed().then(function(instance) {
-    //   return instance.createSusu('key', 2, 'name', 1).then((response)=>{
-    //     // console.log('instance:',instance);
-    //   });
-    // });
-    //   .then(()=>{
-    //   MyContract.deployed().then(function(instance) {
-    //     console.log('instance:',instance);
-    //     // instance.getGroupName('key');
-    //     // return instance.getGroupName.call('key');
-    //   })
-    // });
+    susuParentContract.setProvider(provider);
+    this.setState({susuParentContract: susuParentContract});
   }
 
   instantiateContract() {
@@ -156,7 +136,9 @@ class GroupPage extends Component {
     return (
       <main className="container">
         <div className="pure-g">
-          <button onClick={(e)=>{this.testSusuParent(e)}} className="btn-join" type="button">TEST SUSU PARENT</button>
+          <button onClick={(e)=>{this.createSusu(e)}} className="btn-join" type="button">CREATE SUSU PARENT</button>
+          <button onClick={(e)=>{this.getSusu(e)}} className="btn-join" type="button">GET SUSU</button>
+          <button onClick={(e)=>{this.getSusuName(e)}} className="btn-join" type="button">GET SUSU NAME</button>
           <div className="pure-u-1-1" style={{paddingTop:'15px'}}>
             <GroupInfo groupName={this.state.groupName} contribAmt={this.state.contribAmt}/>
             <table className="memberTable">
@@ -186,9 +168,25 @@ class GroupPage extends Component {
     );
   }// render()
 
-  testSusuParent(e) {
+  createSusu(e) {
     e.preventDefault();
-    this.instantiateParentContract();
+    this.state.susuParentContract.deployed().then((instance)=>{
+      return instance.createSusu.call('key', 2, 'name', 1);
+    }).then((result)=>{console.log('result:',result);});
+  }
+
+  getSusu(e) {
+    e.preventDefault();
+    this.state.susuParentContract.deployed().then((instance)=>{
+      return instance.getSusu.call('key');
+    }).then((result)=>{console.log('result:',result);});
+  }
+
+  getSusuName(e) {
+    e.preventDefault();
+    this.state.susuParentContract.deployed().then((instance)=>{
+      return instance.getGroupName.call('key');
+    }).then((result)=>{console.log('result:',result);});
   }
 
   isReadyToPayout() {
