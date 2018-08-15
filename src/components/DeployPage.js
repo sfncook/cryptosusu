@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 import contract from 'truffle-contract'
 
-import SusuContract from '../../build/contracts/SusuOrig.json'
 import getWeb3 from '../utils/getWeb3'
 
 import '../App.css'
 import SusuParentContract from "../../build/contracts/SusuParent";
+import SusuOrigContract from "../../build/contracts/SusuOrig";
+import SusuContract from "../../build/contracts/Susu";
 
 class DeployPage extends Component {
 
@@ -16,6 +17,8 @@ class DeployPage extends Component {
       web3: null,
       isLoading: false,
       susuParentContract: null,
+      susuContract: null,
+      key:'',
     }
   }
 
@@ -82,29 +85,38 @@ class DeployPage extends Component {
   createSusu(e) {
     e.preventDefault();
     this.state.susuParentContract.deployed().then((instance)=>{
+      const milliseconds = (new Date()).getTime();
+      const key = 'key_'+milliseconds;
+      const name = 'name_'+milliseconds;
+      console.log('key:',key);
+      this.setState({key: key});
       const options = { from: this.state.web3.eth.accounts[0], gas: 1000000 }
-      return instance.createSusu('key1', 2, 'name', 1, options);
+      return instance.createSusu(key, 2, name, 1, options);
     }).then((result)=>{console.log('result:',result);});
   }
 
   getSusu(e) {
     e.preventDefault();
     this.state.susuParentContract.deployed().then((instance)=>{
-      return instance.getSusu.call('key1');
-    }).then((result)=>{console.log('result:',result);});
+      return instance.getSusu.call(this.state.key);
+    }).then((susuContract)=>{
+      console.log('susuContract:',susuContract);
+      this.setState({susuContract: susuContract});
+    });
   }
 
   getSusuName(e) {
     e.preventDefault();
-    this.state.susuParentContract.deployed().then((instance)=>{
-      return instance.getGroupName.call('key1');
-    }).then((result)=>{console.log('result:',result);});
+    const susuContract = this.state.web3.eth.contract(SusuContract.abi).at(this.state.susuContract);
+    susuContract.getGroupName((err, groupName)=>{
+      console.log('err:',err, ' groupName:', groupName);
+    });
   }
 
   clickCreate(e) {
     e.preventDefault();
     this.setState({isLoading:true});
-    const susuContract = contract(SusuContract);
+    const susuContract = contract(SusuOrigContract);
     const { unlinked_binary, abi } = susuContract;
     const newContract = this.state.web3.eth.contract(abi)
     const options = { from: this.state.web3.eth.accounts[0], data: unlinked_binary, gas: 2000000 }
