@@ -7,6 +7,7 @@ import '../App.css'
 import SusuParentContract from "../../build/contracts/SusuParent";
 import SusuOrigContract from "../../build/contracts/SusuOrig";
 import SusuContract from "../../build/contracts/Susu";
+import {BigNumber} from "bignumber.js";
 
 class DeployPage extends Component {
 
@@ -54,6 +55,7 @@ class DeployPage extends Component {
             <button onClick={(e)=>{this.createSusu(e)}} className="btn-join" type="button">CREATE SUSU PARENT</button>
             <button onClick={(e)=>{this.getSusu(e)}} className="btn-join" type="button">GET SUSU</button>
             <button onClick={(e)=>{this.getSusuName(e)}} className="btn-join" type="button">GET SUSU NAME</button>
+            <button onClick={(e)=>{this.getManyMembers(e)}} className="btn-join" type="button">getManyMembers</button>
             <table className="groupTable">
               <tbody>
               <tr id="memberTemplate">
@@ -99,17 +101,26 @@ class DeployPage extends Component {
     e.preventDefault();
     this.state.susuParentContract.deployed().then((instance)=>{
       return instance.getSusu.call(this.state.key);
-    }).then((susuContract)=>{
-      console.log('susuContract:',susuContract);
+    }).then((susuContractAddress)=>{
+      console.log('susuContractAddress:',susuContractAddress);
+      const susuContract = this.state.web3.eth.contract(SusuContract.abi).at(susuContractAddress);
       this.setState({susuContract: susuContract});
     });
   }
 
   getSusuName(e) {
     e.preventDefault();
-    const susuContract = this.state.web3.eth.contract(SusuContract.abi).at(this.state.susuContract);
-    susuContract.getGroupName((err, groupName)=>{
+    this.state.susuContract.getGroupName((err, groupName)=>{
       console.log('err:',err, ' groupName:', groupName);
+    });
+  }
+
+  getManyMembers(e) {
+    e.preventDefault();
+    this.state.susuContract.getManyMembers((err, getManyMembersBig)=>{
+      let bigNumber = new BigNumber(getManyMembersBig);
+      const getManyMembers = bigNumber.toNumber();
+      console.log('err:',err, ' getManyMembers:', getManyMembers);
     });
   }
 
