@@ -1,22 +1,28 @@
 pragma solidity ^0.4.22;
 
-import { Ownable } from "zeppelin-solidity/contracts/ownership/Ownable.sol";
-import { SafeMath } from "zeppelin-solidity/contracts/math/SafeMath.sol";
+import "./SusuBizLogic.sol";
 import "./SusuDataStore.sol";
 
-contract Susu is Ownable {
+contract Susu {
 
-    SusuDataStore public susuDataStore;
-    uint8 constant public MAX_MEMBERS = 5;
+    mapping(bytes32 => address) public deployedSusus;
+    string public foo = "bar";
 
-    constructor(address _susuDataStoreAddress) public {
-        susuDataStore = SusuDataStore(_susuDataStoreAddress);
-        require(susuDataStore.groupSize() <= MAX_MEMBERS);
-        susuDataStore.addMember(owner);
+    function createSusu(bytes32 _key, uint8 _groupSize, string _groupName, uint256 _contribAmtWei) public returns(address) {
+        SusuDataStore susuDataStore = new SusuDataStore(_groupSize, _groupName, _contribAmtWei);
+        SusuBizLogic susu = new SusuBizLogic(susuDataStore);
+        deployedSusus[_key] = susu;
+        return susu;
     }
 
-    function getGroupName() public view returns(string) {
-        return susuDataStore.getGroupName();
+    function getSusu(bytes32 _key) public constant returns(address) {
+        return deployedSusus[_key];
+    }
+
+    function getGroupName(bytes32 _key) public view returns(string) {
+        address susuAddress = deployedSusus[_key];
+        SusuBizLogic susu = SusuBizLogic(susuAddress);
+        return susu.getGroupName();
     }
 
 }
