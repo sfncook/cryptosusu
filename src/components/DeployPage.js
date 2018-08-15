@@ -63,6 +63,7 @@ class DeployPage extends Component {
             <button onClick={(e)=>{this.owner(e)}} className="btn-join" type="button">owner</button>
             <button onClick={(e)=>{this.amIOwner(e)}} className="btn-join" type="button">amIOwner</button>
             <button onClick={(e)=>{this.joinGroup(e)}} className="btn-join" type="button">joinGroup</button>
+            <button onClick={(e)=>{this.getContributionForMember(e)}} className="btn-join" type="button">getContributionForMember</button>
             <table className="groupTable">
               <tbody>
               <tr id="memberTemplate">
@@ -128,6 +129,15 @@ class DeployPage extends Component {
       let bigNumber = new BigNumber(getManyMembersBig);
       const getManyMembers = bigNumber.toNumber();
       console.log('err:',err, ' getManyMembers:', getManyMembers);
+    });
+  }
+
+  getContributionForMember(e) {
+    e.preventDefault();
+    this.state.susuContract.getContributionForMember(this.state.web3.eth.accounts[0], (err, getContributionForMemberBig)=>{
+      let bigNumber = new BigNumber(getContributionForMemberBig);
+      const getContributionForMember = bigNumber.toNumber();
+      console.log('err:',err, ' getContributionForMember:', getContributionForMember);
     });
   }
 

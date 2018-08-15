@@ -62,9 +62,9 @@ contract Susu is Ownable {
         return susuDataStore.getMemberAtIndex(_index);
     }
 
-//    function getContributionForMember(address _member) public view returns(uint256) {
-//        return currentContributions[_member];
-//    }
+    function getContributionForMember(address _member) public view returns(uint256) {
+        return susuDataStore.getContributionForMember(_member);
+    }
 
     function amIOwner() public view returns(bool) {
         return (msg.sender == owner);

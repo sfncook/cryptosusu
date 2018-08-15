@@ -26,4 +26,8 @@ contract SusuDataStore {
         return members[_index];
     }
 
+    function getContributionForMember(address _member) public view returns(uint256) {
+        return currentContributions[_member];
+    }
+
 }
