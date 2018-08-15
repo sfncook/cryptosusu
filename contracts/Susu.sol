@@ -9,10 +9,10 @@ contract Susu is Ownable {
     SusuDataStore public susuDataStore;
     uint8 constant public MAX_MEMBERS = 5;
 
-    constructor(address _susuDataStoreAddress) public {
+    constructor(address _susuDataStoreAddress, address _newOwner) public {
         susuDataStore = SusuDataStore(_susuDataStoreAddress);
         require(susuDataStore.groupSize() <= MAX_MEMBERS);
-        susuDataStore.addMember(owner);
+        susuDataStore.addMember(_newOwner);
     }
 
     function groupName() public view returns(string) {
