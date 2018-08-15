@@ -73,21 +73,22 @@ contract Susu is Ownable {
     function getManyMembers() public view returns(uint) {
         return susuDataStore.getManyMembers();
     }
-//
-//    function joinGroup() public {
-//        require(!isRecipient(msg.sender));
-//        members.push(msg.sender);
-//    }
-//
-//    function isRecipient(address addr) private view returns (bool) {
-//        for (uint i = 0; i < members.length ; i++)
-//        {
-//            if(members[i] == addr)
-//                return true;
-//        }
-//        return false;
-//    }
-//
+
+    function joinGroup() public {
+        require(!isRecipient(msg.sender));
+        susuDataStore.addMember(msg.sender);
+    }
+
+    function isRecipient(address addr) private view returns (bool) {
+        uint manyMembers = getManyMembers();
+        for (uint8 i = 0; i < manyMembers ; i++)
+        {
+            if(getMemberAtIndex(i) == addr)
+                return true;
+        }
+        return false;
+    }
+
 //    function () external payable {
 //        require(msg.value == contribAmtWei);
 //        require(isRecipient(msg.sender));

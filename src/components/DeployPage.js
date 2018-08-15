@@ -19,7 +19,7 @@ class DeployPage extends Component {
       isLoading: false,
       susuParentContract: null,
       susuContract: null,
-      key:'',
+      key:'key_xxx',
     }
   }
 
@@ -43,6 +43,8 @@ class DeployPage extends Component {
     const provider = new this.state.web3.providers.HttpProvider("http://127.0.0.1:7545");
     susuParentContract.setProvider(provider);
     this.setState({susuParentContract: susuParentContract});
+
+    console.log('accounts:',this.state.web3.eth.accounts);
   }
 
   render() {
@@ -58,7 +60,9 @@ class DeployPage extends Component {
             <button onClick={(e)=>{this.getManyMembers(e)}} className="btn-join" type="button">getManyMembers</button>
             <button onClick={(e)=>{this.getMemberAtIndex0(e)}} className="btn-join" type="button">getMemberAtIndex0</button>
             <button onClick={(e)=>{this.getMemberAtIndex1(e)}} className="btn-join" type="button">getMemberAtIndex1</button>
+            <button onClick={(e)=>{this.owner(e)}} className="btn-join" type="button">owner</button>
             <button onClick={(e)=>{this.amIOwner(e)}} className="btn-join" type="button">amIOwner</button>
+            <button onClick={(e)=>{this.joinGroup(e)}} className="btn-join" type="button">joinGroup</button>
             <table className="groupTable">
               <tbody>
               <tr id="memberTemplate">
@@ -90,13 +94,13 @@ class DeployPage extends Component {
   createSusu(e) {
     e.preventDefault();
     this.state.susuParentContract.deployed().then((instance)=>{
-      const milliseconds = (new Date()).getTime();
-      const key = 'key_'+milliseconds;
-      const name = 'name_'+milliseconds;
-      console.log('key:',key);
-      this.setState({key: key});
-      const options = { from: this.state.web3.eth.accounts[0], gas: 2000000 }
-      return instance.createSusu(key, 2, name, 1, options);
+      // const milliseconds = (new Date()).getTime();
+      // const key = 'key_'+milliseconds;
+      // const name = 'name_'+milliseconds;
+      // console.log('key:',key);
+      // this.setState({key: key});
+      const options = { from: this.state.web3.eth.accounts[0], gas: 2000000 };
+      return instance.createSusu(this.state.key, 2, name, 1, options);
     }).then((result)=>{console.log('result:',result);});
   }
 
@@ -141,11 +145,26 @@ class DeployPage extends Component {
     });
   }
 
+  owner(e) {
+    e.preventDefault();
+    const options = {from: this.state.web3.eth.accounts[0]};
+    this.state.susuContract.owner(options, (err, owner)=>{
+      console.log('err:',err, ' owner:', owner, ' =?me', (owner===this.state.web3.eth.accounts[0]));
+    });
+  }
+
   amIOwner(e) {
     e.preventDefault();
-    this.state.susuContract.amIOwner((err, amIOwner)=>{
+    const options = {from: this.state.web3.eth.accounts[0]};
+    this.state.susuContract.amIOwner(options, (err, amIOwner)=>{
       console.log('err:',err, ' amIOwner:', amIOwner);
     });
+  }
+
+  joinGroup(e) {
+    e.preventDefault();
+    const options = {from: this.state.web3.eth.accounts[0], gas: 2000000};
+    this.state.susuContract.joinGroup(options, (err, resp)=>{console.log('err:',err, ' resp:', resp);});
   }
 
   clickCreate(e) {
@@ -153,14 +172,14 @@ class DeployPage extends Component {
     this.setState({isLoading:true});
     const susuContract = contract(SusuOrigContract);
     const { unlinked_binary, abi } = susuContract;
-    const newContract = this.state.web3.eth.contract(abi)
-    const options = { from: this.state.web3.eth.accounts[0], data: unlinked_binary, gas: 2000000 }
+    const newContract = this.state.web3.eth.contract(abi);
+    const options = { from: this.state.web3.eth.accounts[0], data: unlinked_binary, gas: 2000000 };
 
     const groupSize = document.getElementById('group_size').value;
     const groupName = document.getElementById('group_name').value;
     const contribAmtEth = document.getElementById('contrib_amt').value;
     const contribAmtWei = this.state.web3.toWei(contribAmtEth, 'ether');
-    newContract.new(groupSize, groupName, contribAmtWei, options, this.newContractCallback())
+    newContract.new(groupSize, groupName, contribAmtWei, options, this.newContractCallback());
   }
 
   newContractCallback() {
