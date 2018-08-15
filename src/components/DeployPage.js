@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import contract from 'truffle-contract'
 
-import SusuOrigContract from '../../build/contracts/SusuOrig.json'
+import SusuContract from '../../build/contracts/SusuOrig.json'
 import getWeb3 from '../utils/getWeb3'
 
 import '../App.css'
-import SusuContract from "../../build/contracts/Susu";
+import SusuParentContract from "../../build/contracts/SusuParent";
 
 class DeployPage extends Component {
 
@@ -15,7 +15,7 @@ class DeployPage extends Component {
     this.state = {
       web3: null,
       isLoading: false,
-      susuContract: null,
+      susuParentContract: null,
     }
   }
 
@@ -35,10 +35,10 @@ class DeployPage extends Component {
 
   instantiateSusuContract() {
     const contract = require("truffle-contract");
-    const susuContract = contract(SusuContract);
+    const susuParentContract = contract(SusuParentContract);
     const provider = new this.state.web3.providers.HttpProvider("http://127.0.0.1:7545");
-    susuContract.setProvider(provider);
-    this.setState({susuContract: susuContract});
+    susuParentContract.setProvider(provider);
+    this.setState({susuParentContract: susuParentContract});
   }
 
   render() {
@@ -81,7 +81,7 @@ class DeployPage extends Component {
 
   createSusu(e) {
     e.preventDefault();
-    this.state.susuContract.deployed().then((instance)=>{
+    this.state.susuParentContract.deployed().then((instance)=>{
       const options = { from: this.state.web3.eth.accounts[0], gas: 1000000 }
       return instance.createSusu('key1', 2, 'name', 1, options);
     }).then((result)=>{console.log('result:',result);});
@@ -89,14 +89,14 @@ class DeployPage extends Component {
 
   getSusu(e) {
     e.preventDefault();
-    this.state.susuContract.deployed().then((instance)=>{
+    this.state.susuParentContract.deployed().then((instance)=>{
       return instance.getSusu.call('key1');
     }).then((result)=>{console.log('result:',result);});
   }
 
   getSusuName(e) {
     e.preventDefault();
-    this.state.susuContract.deployed().then((instance)=>{
+    this.state.susuParentContract.deployed().then((instance)=>{
       return instance.getGroupName.call('key1');
     }).then((result)=>{console.log('result:',result);});
   }
@@ -104,7 +104,7 @@ class DeployPage extends Component {
   clickCreate(e) {
     e.preventDefault();
     this.setState({isLoading:true});
-    const susuContract = contract(SusuOrigContract);
+    const susuContract = contract(SusuContract);
     const { unlinked_binary, abi } = susuContract;
     const newContract = this.state.web3.eth.contract(abi)
     const options = { from: this.state.web3.eth.accounts[0], data: unlinked_binary, gas: 2000000 }
