@@ -14,10 +14,6 @@ contract SusuDataStore {
         groupSize = _groupSize;
     }
 
-    function getGroupName() public view returns(string) {
-        return groupName;
-    }
-
     function addMember(address _member) public returns(address[]){
         members.push(_member);
     }
@@ -26,8 +22,8 @@ contract SusuDataStore {
         return members.length;
     }
 
-    function getMemberAtIndex(uint8 index) public view returns(address) {
-        return members[index];
+    function getMemberAtIndex(uint8 _index) public view returns(address) {
+        return members[_index];
     }
 
 }

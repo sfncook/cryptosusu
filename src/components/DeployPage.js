@@ -53,9 +53,12 @@ class DeployPage extends Component {
         <div className="pure-g">
           <div className="pure-u-1-1" style={{paddingTop:'15px'}}>
             <button onClick={(e)=>{this.createSusu(e)}} className="btn-join" type="button">CREATE SUSU PARENT</button>
-            <button onClick={(e)=>{this.getSusu(e)}} className="btn-join" type="button">GET SUSU</button>
-            <button onClick={(e)=>{this.getSusuName(e)}} className="btn-join" type="button">GET SUSU NAME</button>
+            <button onClick={(e)=>{this.setSusu(e)}} className="btn-join" type="button">SET SUSU CONTRACT</button>
+            <button onClick={(e)=>{this.groupName(e)}} className="btn-join" type="button">groupName</button>
             <button onClick={(e)=>{this.getManyMembers(e)}} className="btn-join" type="button">getManyMembers</button>
+            <button onClick={(e)=>{this.getMemberAtIndex0(e)}} className="btn-join" type="button">getMemberAtIndex0</button>
+            <button onClick={(e)=>{this.getMemberAtIndex1(e)}} className="btn-join" type="button">getMemberAtIndex1</button>
+            <button onClick={(e)=>{this.amIOwner(e)}} className="btn-join" type="button">amIOwner</button>
             <table className="groupTable">
               <tbody>
               <tr id="memberTemplate">
@@ -92,12 +95,12 @@ class DeployPage extends Component {
       const name = 'name_'+milliseconds;
       console.log('key:',key);
       this.setState({key: key});
-      const options = { from: this.state.web3.eth.accounts[0], gas: 1000000 }
+      const options = { from: this.state.web3.eth.accounts[0], gas: 2000000 }
       return instance.createSusu(key, 2, name, 1, options);
     }).then((result)=>{console.log('result:',result);});
   }
 
-  getSusu(e) {
+  setSusu(e) {
     e.preventDefault();
     this.state.susuParentContract.deployed().then((instance)=>{
       return instance.getSusu.call(this.state.key);
@@ -108,9 +111,9 @@ class DeployPage extends Component {
     });
   }
 
-  getSusuName(e) {
+  groupName(e) {
     e.preventDefault();
-    this.state.susuContract.getGroupName((err, groupName)=>{
+    this.state.susuContract.groupName((err, groupName)=>{
       console.log('err:',err, ' groupName:', groupName);
     });
   }
@@ -121,6 +124,27 @@ class DeployPage extends Component {
       let bigNumber = new BigNumber(getManyMembersBig);
       const getManyMembers = bigNumber.toNumber();
       console.log('err:',err, ' getManyMembers:', getManyMembers);
+    });
+  }
+
+  getMemberAtIndex0(e) {
+    e.preventDefault();
+    this.state.susuContract.getMemberAtIndex(0, (err, memberAddress)=>{
+      console.log('err:',err, ' memberAddress0:', memberAddress);
+    });
+  }
+
+  getMemberAtIndex1(e) {
+    e.preventDefault();
+    this.state.susuContract.getMemberAtIndex(1, (err, memberAddress)=>{
+      console.log('err:',err, ' memberAddress1:', memberAddress);
+    });
+  }
+
+  amIOwner(e) {
+    e.preventDefault();
+    this.state.susuContract.amIOwner((err, amIOwner)=>{
+      console.log('err:',err, ' amIOwner:', amIOwner);
     });
   }
 

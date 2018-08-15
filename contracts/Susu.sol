@@ -15,8 +15,8 @@ contract Susu is Ownable {
         susuDataStore.addMember(owner);
     }
 
-    function getGroupName() public view returns(string) {
-        return susuDataStore.getGroupName();
+    function groupName() public view returns(string) {
+        return susuDataStore.groupName();
     }
 
 
@@ -57,18 +57,18 @@ contract Susu is Ownable {
 //            }
 //        }
 //    }
-//
-//    function getMemberAtIndex(uint8 index) public view returns(address) {
-//        return members[index];
-//    }
-//
+
+    function getMemberAtIndex(uint8 _index) public view returns(address) {
+        return susuDataStore.getMemberAtIndex(_index);
+    }
+
 //    function getContributionForMember(address _member) public view returns(uint256) {
 //        return currentContributions[_member];
 //    }
-//
-//    function amIOwner() public view returns(bool) {
-//        return (msg.sender == owner);
-//    }
+
+    function amIOwner() public view returns(bool) {
+        return (msg.sender == owner);
+    }
 
     function getManyMembers() public view returns(uint) {
         return susuDataStore.getManyMembers();
