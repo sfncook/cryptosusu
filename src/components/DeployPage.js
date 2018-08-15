@@ -82,21 +82,22 @@ class DeployPage extends Component {
   createSusu(e) {
     e.preventDefault();
     this.state.susuParentContract.deployed().then((instance)=>{
-      return instance.createSusu.call('key', 2, 'name', 1);
+      const options = { from: this.state.web3.eth.accounts[0], gas: 1000000 }
+      return instance.createSusu('key1', 2, 'name', 1, options);
     }).then((result)=>{console.log('result:',result);});
   }
 
   getSusu(e) {
     e.preventDefault();
     this.state.susuParentContract.deployed().then((instance)=>{
-      return instance.getSusu.call('key');
+      return instance.getSusu.call('key1');
     }).then((result)=>{console.log('result:',result);});
   }
 
   getSusuName(e) {
     e.preventDefault();
     this.state.susuParentContract.deployed().then((instance)=>{
-      return instance.getGroupName.call('key');
+      return instance.getGroupName.call('key1');
     }).then((result)=>{console.log('result:',result);});
   }
 
