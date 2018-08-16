@@ -101,10 +101,10 @@ contract Susu is Ownable {
 //    }
 
     // onlyOwner?
-    function kill() public pure {
+//    function kill() public pure {
 //        ???=> var tokenBalance = susuDataStore.balanceOf(this);
 //        ???=> tokenLedger.transfer(_upgradedSusu, tokenBalance);
 //        ???=> selfdestruct(_upgradedSusu);
-    }
+//    }
 
 }

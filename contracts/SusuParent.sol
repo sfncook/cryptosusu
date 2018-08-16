@@ -30,16 +30,12 @@ contract SusuParent {
     }
 
     // onlyOwner?
-//    function upgradeSusu(bytes32 _key) external {
-//        address susuAddress = deployedSusus[_key];
-//        Susu susu = Susu(susuAddress);
-//        SusuDataStore susuDataStore = susu.susuDataStore();
-//
-//        Susu susuNew = new Susu(susuDataStore, susu.owner());
-//
-//        susu.kill();
-//
-//        deployedSusus[_key] = susuNew;
-//    }
+    function upgradeSusu(bytes32 _key) external {
+        address susuAddressOrig = registry.get(_key);
+        Susu susu = Susu(susuAddressOrig);
+        Susu susuNew = new Susu(susu.susuDataStore(), susu.owner());
+//        susu.kill(); // Transfer value?
+        registry.put(_key, susuNew);
+    }
 
 }
