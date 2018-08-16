@@ -10,7 +10,7 @@ contract SusuRegistry is IRegistry, Ownable {
         registry[_key] = _contractAddress;
     }
 
-    function get(bytes32 _key) external returns(address){
+    function get(bytes32 _key) view external returns(address){
         return registry[_key];
     }
 }

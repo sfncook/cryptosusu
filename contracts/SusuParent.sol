@@ -16,17 +16,17 @@ contract SusuParent {
 
     // onlyOwner?
     function createSusu(bytes32 _key, uint8 _groupSize, string _groupName, uint256 _contribAmtWei) external {
-        address susuOrigAddress = register.get(_key);
+        address susuOrigAddress = registry.get(_key);
         if(susuOrigAddress == 0x0){
             SusuDataStore susuDataStore = new SusuDataStore(_groupSize, _groupName, _contribAmtWei);
             Susu susu = new Susu(susuDataStore, msg.sender);
-            register.put(_key, susu);
+            registry.put(_key, susu);
             susu.transferOwnership(msg.sender);
         }
     }
 
-    function getSusu(bytes32 _key) external constant returns(address) {
-        return register.get(_key);
+    function getSusu(bytes32 _key) view external returns(address) {
+        return registry.get(_key);
     }
 
     // onlyOwner?
