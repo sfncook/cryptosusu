@@ -1,14 +1,15 @@
 pragma solidity ^0.4.22;
 
-import { Ownable } from "zeppelin-solidity/contracts/ownership/Ownable.sol";
-import { SafeMath } from "zeppelin-solidity/contracts/math/SafeMath.sol";
+//import { Ownable } from "zeppelin-solidity/contracts/ownership/Ownable.sol";
+//import { SafeMath } from "zeppelin-solidity/contracts/math/SafeMath.sol";
 import "./SusuDataStore.sol";
 
-contract Susu is Ownable {
+// add Ownable
+contract Susu {
 
     SusuDataStore public susuDataStore;
     uint8 constant public MAX_MEMBERS = 5;
-    string public version = '0.0.2';
+    string public version = '0.0.1';
 
     constructor(address _susuDataStoreAddress, address _newOwner) public {
         susuDataStore = SusuDataStore(_susuDataStoreAddress);
@@ -18,10 +19,6 @@ contract Susu is Ownable {
 
     function groupName() public view returns(string) {
         return susuDataStore.groupName();
-    }
-
-    function foo() public pure returns(string) {
-        return 'bar_0.0.1';
     }
 
 //    function pullPayOut() public payable {
@@ -70,8 +67,9 @@ contract Susu is Ownable {
         return susuDataStore.getContributionForMember(_member);
     }
 
-    function amIOwner() public view returns(bool) {
-        return (msg.sender == owner);
+    function amIOwner() public pure returns(bool) {
+//        return (msg.sender == owner);
+        return true;
     }
 
     function getManyMembers() public view returns(uint) {

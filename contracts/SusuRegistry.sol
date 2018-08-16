@@ -1,12 +1,14 @@
 pragma solidity ^0.4.22;
 
-import { Ownable } from "zeppelin-solidity/contracts/ownership/Ownable.sol";
+//import { Ownable } from "zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./IRegistry.sol";
 
-contract SusuRegistry is IRegistry, Ownable {
+// add Ownable
+contract SusuRegistry is IRegistry {
     mapping(bytes32 => address) public registry;
 
-    function put(bytes32 _key, address _contractAddress) external onlyOwner {
+    // add onlyOwner
+    function put(bytes32 _key, address _contractAddress) external {
         registry[_key] = _contractAddress;
     }
 

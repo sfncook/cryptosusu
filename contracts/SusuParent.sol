@@ -1,6 +1,6 @@
 pragma solidity ^0.4.22;
 
-import { Ownable } from "zeppelin-solidity/contracts/ownership/Ownable.sol";
+//import { Ownable } from "zeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./Susu.sol";
 import "./SusuDataStore.sol";
 import "./IRegistry.sol";
@@ -21,7 +21,7 @@ contract SusuParent {
             SusuDataStore susuDataStore = new SusuDataStore(_groupSize, _groupName, _contribAmtWei);
             Susu susu = new Susu(susuDataStore, msg.sender);
             registry.put(_key, susu);
-            susu.transferOwnership(msg.sender);
+//            susu.transferOwnership(msg.sender);
         }
     }
 
@@ -33,7 +33,7 @@ contract SusuParent {
     function upgradeSusu(bytes32 _key) external {
         address susuAddressOrig = registry.get(_key);
         Susu susu = Susu(susuAddressOrig);
-        Susu susuNew = new Susu(susu.susuDataStore(), susu.owner());
+        Susu susuNew = new Susu(susu.susuDataStore(), 0x0);
 //        susu.kill(); // Transfer value?
         registry.put(_key, susuNew);
     }
