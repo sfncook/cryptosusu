@@ -19,6 +19,7 @@ class DeployPage extends Component {
       isLoading: false,
       susuParentContract: null,
       susuContract: null,
+      susuContract_old: null,
       key:'key_xxx',
     }
   }
@@ -54,19 +55,23 @@ class DeployPage extends Component {
       <main className="container">
         <div className="pure-g">
           <div className="pure-u-1-1" style={{paddingTop:'15px'}}>
-            <button onClick={(e)=>{this.createSusu(e)}} className="btn-join" type="button">CREATE SUSU PARENT</button>
-            <button onClick={(e)=>{this.setSusu(e)}} className="btn-join" type="button">SET SUSU CONTRACT</button>
-            <button onClick={(e)=>{this.groupName(e)}} className="btn-join" type="button">groupName</button>
-            <button onClick={(e)=>{this.getManyMembers(e)}} className="btn-join" type="button">getManyMembers</button>
-            <button onClick={(e)=>{this.getMemberAtIndex0(e)}} className="btn-join" type="button">getMemberAtIndex0</button>
-            <button onClick={(e)=>{this.getMemberAtIndex1(e)}} className="btn-join" type="button">getMemberAtIndex1</button>
-            <button onClick={(e)=>{this.owner(e)}} className="btn-join" type="button">owner</button>
-            <button onClick={(e)=>{this.amIOwner(e)}} className="btn-join" type="button">amIOwner</button>
-            <button onClick={(e)=>{this.joinGroup(e)}} className="btn-join" type="button">joinGroup</button>
-            <button onClick={(e)=>{this.getContributionForMember(e)}} className="btn-join" type="button">getContributionForMember</button>
-            <button onClick={(e)=>{this.foo(e)}} className="btn-join" type="button">foo</button>
-            <button onClick={(e)=>{this.version(e)}} className="btn-join" type="button">version</button>
-            <button onClick={(e)=>{this.upgradeSusu(e)}} className="btn-join" type="button">upgradeSusu</button>
+            <button onClick={(e)=>{this.createSusu(e)}} className="btn-join" type="button">createSusu</button>
+            <button onClick={(e)=>{this.upgradeToLatestSusu(e)}} className="btn-join" type="button">upgradeToLatestSusu</button>
+            {/*<button onClick={(e)=>{this.createSusu(e)}} className="btn-join" type="button">CREATE SUSU PARENT</button>*/}
+            {/*<button onClick={(e)=>{this.setSusu(e)}} className="btn-join" type="button">SET SUSU CONTRACT</button>*/}
+            {/*<button onClick={(e)=>{this.setSusu_old(e)}} className="btn-join" type="button">setSusu_old</button>*/}
+            {/*<button onClick={(e)=>{this.groupName(e)}} className="btn-join" type="button">groupName</button>*/}
+            {/*<button onClick={(e)=>{this.getManyMembers(e)}} className="btn-join" type="button">getManyMembers</button>*/}
+            {/*<button onClick={(e)=>{this.getMemberAtIndex0(e)}} className="btn-join" type="button">getMemberAtIndex0</button>*/}
+            {/*<button onClick={(e)=>{this.getMemberAtIndex1(e)}} className="btn-join" type="button">getMemberAtIndex1</button>*/}
+            {/*<button onClick={(e)=>{this.owner(e)}} className="btn-join" type="button">owner</button>*/}
+            {/*<button onClick={(e)=>{this.amIOwner(e)}} className="btn-join" type="button">amIOwner</button>*/}
+            {/*<button onClick={(e)=>{this.joinGroup(e)}} className="btn-join" type="button">joinGroup</button>*/}
+            {/*<button onClick={(e)=>{this.getContributionForMember(e)}} className="btn-join" type="button">getContributionForMember</button>*/}
+            {/*<button onClick={(e)=>{this.foo(e)}} className="btn-join" type="button">foo</button>*/}
+            {/*<button onClick={(e)=>{this.version_old(e)}} className="btn-join" type="button">version_old</button>*/}
+            {/*<button onClick={(e)=>{this.version_new(e)}} className="btn-join" type="button">version_new</button>*/}
+            {/*<button onClick={(e)=>{this.upgradeSusu(e)}} className="btn-join" type="button">upgradeSusu</button>*/}
             <table className="groupTable">
               <tbody>
               <tr id="memberTemplate">
@@ -98,11 +103,14 @@ class DeployPage extends Component {
   createSusu(e) {
     e.preventDefault();
     this.state.susuParentContract.deployed().then((instance)=>{
-      // const milliseconds = (new Date()).getTime();
-      // const key = 'key_'+milliseconds;
-      // const name = 'name_'+milliseconds;
-      // console.log('key:',key);
-      // this.setState({key: key});
+      const options = { from: this.state.web3.eth.accounts[0], gas: 2000000 };
+      return instance.createSusu(this.state.key, 2, name, 1, options);
+    }).then((result)=>{console.log('createSusu result:',result);});
+  }
+
+  upgradeToLatestSusu(e) {
+    e.preventDefault();
+    this.state.susuParentContract.deployed().then((instance)=>{
       const options = { from: this.state.web3.eth.accounts[0], gas: 2000000 };
       return instance.createSusu(this.state.key, 2, name, 1, options);
     }).then((result)=>{console.log('createSusu result:',result);});
@@ -127,6 +135,13 @@ class DeployPage extends Component {
     });
   }
 
+  setSusu_old(e) {
+    e.preventDefault();
+    console.log('susuContractAddress_old:','0xf077a4cc347b823759cfc37189f7dc365858d787');
+    const susuContract_old = this.state.web3.eth.contract(SusuContract.abi).at('0xf077a4cc347b823759cfc37189f7dc365858d787');
+    this.setState({susuContract_old: susuContract_old});
+  }
+
   foo(e) {
     e.preventDefault();
     this.state.susuContract.foo((err, foo)=>{
@@ -134,10 +149,17 @@ class DeployPage extends Component {
     });
   }
 
-  version(e) {
+  version_old(e) {
     e.preventDefault();
-    this.state.susuContract.version((err, version)=>{
-      console.log('err:',err, ' version:', version);
+    this.state.susuContract_old.version((err, version_old)=>{
+      console.log('err:',err, ' version_old:', version_old);
+    });
+  }
+
+  version_new(e) {
+    e.preventDefault();
+    this.state.susuContract.version((err, version_new)=>{
+      console.log('err:',err, ' version_new:', version_new);
     });
   }
 
