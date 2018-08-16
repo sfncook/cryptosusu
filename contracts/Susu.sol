@@ -9,7 +9,7 @@ contract Susu {
 
     SusuDataStore public susuDataStore;
     uint8 constant public MAX_MEMBERS = 5;
-    string public version = '0.0.1';
+    string constant public version = '0.0.4';
 
     constructor(address _susuDataStoreAddress, address _newOwner) public {
         susuDataStore = SusuDataStore(_susuDataStoreAddress);

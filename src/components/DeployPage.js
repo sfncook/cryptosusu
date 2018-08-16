@@ -64,7 +64,7 @@ class DeployPage extends Component {
             {/*<button onClick={(e)=>{this.createSusu(e)}} className="btn-join" type="button">CREATE SUSU PARENT</button>*/}
             {/*<button onClick={(e)=>{this.setSusu(e)}} className="btn-join" type="button">SET SUSU CONTRACT</button>*/}
             {/*<button onClick={(e)=>{this.setSusu_old(e)}} className="btn-join" type="button">setSusu_old</button>*/}
-            {/*<button onClick={(e)=>{this.groupName(e)}} className="btn-join" type="button">groupName</button>*/}
+            <button onClick={(e)=>{this.groupName(e)}} className="btn-join" type="button">groupName</button>
             {/*<button onClick={(e)=>{this.getManyMembers(e)}} className="btn-join" type="button">getManyMembers</button>*/}
             {/*<button onClick={(e)=>{this.getMemberAtIndex0(e)}} className="btn-join" type="button">getMemberAtIndex0</button>*/}
             {/*<button onClick={(e)=>{this.getMemberAtIndex1(e)}} className="btn-join" type="button">getMemberAtIndex1</button>*/}
@@ -108,7 +108,7 @@ class DeployPage extends Component {
     e.preventDefault();
     this.state.susuParentContract.deployed().then((instance)=>{
       const options = { from: this.state.web3.eth.accounts[0], gas: 2000000 };
-      return instance.createSusu(this.state.key, 2, name, 1, options);
+      return instance.createSusu(this.state.key, 2, 'name_'+this.state.key, 1, options);
     }).then((result)=>{console.log('createSusu result:',result);});
   }
 
@@ -127,8 +127,8 @@ class DeployPage extends Component {
     e.preventDefault();
     this.state.susuParentContract.deployed().then((instance)=>{
       const options = { from: this.state.web3.eth.accounts[0], gas: 2000000 };
-      return instance.createSusu(this.state.key, 2, name, 1, options);
-    }).then((result)=>{console.log('createSusu result:',result);});
+      return instance.upgradeSusu(this.state.key, options);
+    }).then((result)=>{console.log('upgradeSusu result:',result);});
   }
 
   setSusu2(e) {
@@ -163,13 +163,13 @@ class DeployPage extends Component {
     });
   }
 
-  // groupName(e) {
-  //   e.preventDefault();
-  //   this.state.susuContract.groupName((err, groupName)=>{
-  //     console.log('err:',err, ' groupName:', groupName);
-  //   });
-  // }
-  //
+  groupName(e) {
+    e.preventDefault();
+    this.state.susuContract1.groupName((err, groupName)=>{
+      console.log('err:',err, ' groupName:', groupName);
+    });
+  }
+
   // getManyMembers(e) {
   //   e.preventDefault();
   //   this.state.susuContract.getManyMembers((err, getManyMembersBig)=>{
