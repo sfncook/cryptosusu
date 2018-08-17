@@ -14,20 +14,24 @@ contract SusuDataStore {
         groupSize = _groupSize;
     }
 
-    function addMember(address _member) public returns(address[]){
+    function addMember(address _member) external {
         members.push(_member);
     }
 
-    function getManyMembers() public view returns(uint) {
+    function getManyMembers() external view returns(uint) {
         return members.length;
     }
 
-    function getMemberAtIndex(uint8 _index) public view returns(address) {
+    function getMemberAtIndex(uint8 _index) external view returns(address) {
         return members[_index];
     }
 
-    function getContributionForMember(address _member) public view returns(uint256) {
+    function getContributionForMember(address _member) external view returns(uint256) {
         return currentContributions[_member];
+    }
+
+    function setContributionForMember(address _member, uint256 _contribAmtWei) external {
+        currentContributions[_member] = _contribAmtWei;
     }
 
 }

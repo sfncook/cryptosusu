@@ -9,7 +9,7 @@ contract Susu {
 
     SusuDataStore public susuDataStore;
     uint8 constant public MAX_MEMBERS = 5;
-    string constant public version = '0.0.4';
+    string constant public version = '0.0.11';
 
     constructor(address _susuDataStoreAddress, address _newOwner) public {
         susuDataStore = SusuDataStore(_susuDataStoreAddress);
@@ -19,6 +19,10 @@ contract Susu {
 
     function groupName() public view returns(string) {
         return susuDataStore.groupName();
+    }
+
+    function contribAmtWei() public view returns(uint256) {
+        return susuDataStore.contribAmtWei();
     }
 
 //    function pullPayOut() public payable {
@@ -63,11 +67,7 @@ contract Susu {
         return susuDataStore.getMemberAtIndex(_index);
     }
 
-    function getContributionForMember(address _member) public view returns(uint256) {
-        return susuDataStore.getContributionForMember(_member);
-    }
-
-    function amIOwner() public pure returns(bool) {
+    function amIOwner() external pure returns(bool) {
 //        return (msg.sender == owner);
         return true;
     }
@@ -76,7 +76,7 @@ contract Susu {
         return susuDataStore.getManyMembers();
     }
 
-    function joinGroup() public {
+    function joinGroup() external {
         require(!isRecipient(msg.sender));
         susuDataStore.addMember(msg.sender);
     }
@@ -91,12 +91,16 @@ contract Susu {
         return false;
     }
 
-//    function () external payable {
-//        require(msg.value == contribAmtWei);
-//        require(isRecipient(msg.sender));
-//        require(currentContributions[msg.sender] == 0);
-//        currentContributions[msg.sender] = msg.value;
-//    }
+    function getContributionForMember(address _member) external view returns(uint256) {
+        return susuDataStore.getContributionForMember(_member);
+    }
+
+    function () external payable {
+//        require(msg.value == susuDataStore.contribAmtWei());
+        require(isRecipient(msg.sender));
+        require(susuDataStore.getContributionForMember(msg.sender) == 0);
+        susuDataStore.setContributionForMember(msg.sender, msg.value);
+    }
 
     // onlyOwner?
 //    function kill() public pure {

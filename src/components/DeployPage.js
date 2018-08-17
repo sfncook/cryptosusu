@@ -7,7 +7,7 @@ import '../App.css'
 import SusuParentContract from "../../build/contracts/SusuParent";
 import SusuOrigContract from "../../build/contracts/SusuOrig";
 import SusuContract from "../../build/contracts/Susu";
-// import {BigNumber} from "bignumber.js";
+import {BigNumber} from "bignumber.js";
 
 class DeployPage extends Component {
 
@@ -18,9 +18,9 @@ class DeployPage extends Component {
       web3: null,
       isLoading: false,
       susuParentContract: null,
-      susuContract1: null,
-      susuContract2: null,
+      susuContract: null,
       key:'key',
+      contribAmtWei:0,
     }
   }
 
@@ -56,26 +56,19 @@ class DeployPage extends Component {
         <div className="pure-g">
           <div className="pure-u-1-1" style={{paddingTop:'15px'}}>
             <button onClick={(e)=>{this.createSusu(e)}} className="btn-join" type="button">createSusu</button>
-            <button onClick={(e)=>{this.setSusu1(e)}} className="btn-join" type="button">setSusu1</button>
+            <button onClick={(e)=>{this.setSusu(e)}} className="btn-join" type="button">setSusu</button>
             <button onClick={(e)=>{this.upgradeSusu(e)}} className="btn-join" type="button">upgradeSusu</button>
-            <button onClick={(e)=>{this.setSusu2(e)}} className="btn-join" type="button">setSusu2</button>
-            <button onClick={(e)=>{this.version1(e)}} className="btn-join" type="button">version1</button>
-            <button onClick={(e)=>{this.version2(e)}} className="btn-join" type="button">version2</button>
-            {/*<button onClick={(e)=>{this.createSusu(e)}} className="btn-join" type="button">CREATE SUSU PARENT</button>*/}
-            {/*<button onClick={(e)=>{this.setSusu(e)}} className="btn-join" type="button">SET SUSU CONTRACT</button>*/}
-            {/*<button onClick={(e)=>{this.setSusu_old(e)}} className="btn-join" type="button">setSusu_old</button>*/}
+            <button onClick={(e)=>{this.version(e)}} className="btn-join" type="button">version</button>
             <button onClick={(e)=>{this.groupName(e)}} className="btn-join" type="button">groupName</button>
-            {/*<button onClick={(e)=>{this.getManyMembers(e)}} className="btn-join" type="button">getManyMembers</button>*/}
-            {/*<button onClick={(e)=>{this.getMemberAtIndex0(e)}} className="btn-join" type="button">getMemberAtIndex0</button>*/}
-            {/*<button onClick={(e)=>{this.getMemberAtIndex1(e)}} className="btn-join" type="button">getMemberAtIndex1</button>*/}
-            {/*<button onClick={(e)=>{this.owner(e)}} className="btn-join" type="button">owner</button>*/}
-            {/*<button onClick={(e)=>{this.amIOwner(e)}} className="btn-join" type="button">amIOwner</button>*/}
-            {/*<button onClick={(e)=>{this.joinGroup(e)}} className="btn-join" type="button">joinGroup</button>*/}
-            {/*<button onClick={(e)=>{this.getContributionForMember(e)}} className="btn-join" type="button">getContributionForMember</button>*/}
-            {/*<button onClick={(e)=>{this.foo(e)}} className="btn-join" type="button">foo</button>*/}
-            {/*<button onClick={(e)=>{this.version_old(e)}} className="btn-join" type="button">version_old</button>*/}
-            {/*<button onClick={(e)=>{this.version_new(e)}} className="btn-join" type="button">version_new</button>*/}
-            {/*<button onClick={(e)=>{this.upgradeSusu(e)}} className="btn-join" type="button">upgradeSusu</button>*/}
+            <button onClick={(e)=>{this.getManyMembers(e)}} className="btn-join" type="button">getManyMembers</button>
+            <button onClick={(e)=>{this.getMemberAtIndex0(e)}} className="btn-join" type="button">getMemberAtIndex0</button>
+            <button onClick={(e)=>{this.getMemberAtIndex1(e)}} className="btn-join" type="button">getMemberAtIndex1</button>
+            <button onClick={(e)=>{this.owner(e)}} className="btn-join" type="button">owner</button>
+            <button onClick={(e)=>{this.amIOwner(e)}} className="btn-join" type="button">amIOwner</button>
+            <button onClick={(e)=>{this.joinGroup(e)}} className="btn-join" type="button">joinGroup</button>
+            <button onClick={(e)=>{this.contribute(e)}} className="btn-join" type="button">contribute</button>
+            <button onClick={(e)=>{this.contribAmtWei(e)}} className="btn-join" type="button">set contribAmtWei</button>
+            <button onClick={(e)=>{this.getContributionForMember(e)}} className="btn-join" type="button">getContributionForMember</button>
             <table className="groupTable">
               <tbody>
               <tr id="memberTemplate">
@@ -108,18 +101,18 @@ class DeployPage extends Component {
     e.preventDefault();
     this.state.susuParentContract.deployed().then((instance)=>{
       const options = { from: this.state.web3.eth.accounts[0], gas: 2000000 };
-      return instance.createSusu(this.state.key, 2, 'name_'+this.state.key, 1, options);
+      return instance.createSusu(this.state.key, 2, 'name_'+this.state.key, this.state.web3.toWei(1.0, "ether"), options);
     }).then((result)=>{console.log('createSusu result:',result);});
   }
 
-  setSusu1(e) {
+  setSusu(e) {
     e.preventDefault();
     this.state.susuParentContract.deployed().then((instance)=>{
       return instance.getSusu.call(this.state.key);
     }).then((susuContractAddress)=>{
       console.log('susuContractAddress:',susuContractAddress);
       const susuContract = this.state.web3.eth.contract(SusuContract.abi).at(susuContractAddress);
-      this.setState({susuContract1: susuContract});
+      this.setState({susuContract: susuContract});
     });
   }
 
@@ -131,98 +124,102 @@ class DeployPage extends Component {
     }).then((result)=>{console.log('upgradeSusu result:',result);});
   }
 
-  setSusu2(e) {
+  version(e) {
     e.preventDefault();
-    this.state.susuParentContract.deployed().then((instance)=>{
-      return instance.getSusu.call(this.state.key);
-    }).then((susuContractAddress)=>{
-      console.log('susuContractAddress:',susuContractAddress);
-      const susuContract = this.state.web3.eth.contract(SusuContract.abi).at(susuContractAddress);
-      this.setState({susuContract2: susuContract});
-    });
-  }
-
-  // foo(e) {
-  //   e.preventDefault();
-  //   this.state.susuContract.foo((err, foo)=>{
-  //     console.log('err:',err, ' foo:', foo);
-  //   });
-  // }
-
-  version1(e) {
-    e.preventDefault();
-    this.state.susuContract1.version((err, version1)=>{
-      console.log('err:',err, ' version1:', version1);
-    });
-  }
-
-  version2(e) {
-    e.preventDefault();
-    this.state.susuContract2.version((err, version2)=>{
-      console.log('err:',err, ' version2:', version2);
+    this.state.susuContract.version((err, version)=>{
+      console.log('err:',err, ' version:', version);
     });
   }
 
   groupName(e) {
     e.preventDefault();
-    this.state.susuContract1.groupName((err, groupName)=>{
+    this.state.susuContract.groupName((err, groupName)=>{
       console.log('err:',err, ' groupName:', groupName);
     });
   }
 
-  // getManyMembers(e) {
-  //   e.preventDefault();
-  //   this.state.susuContract.getManyMembers((err, getManyMembersBig)=>{
-  //     let bigNumber = new BigNumber(getManyMembersBig);
-  //     const getManyMembers = bigNumber.toNumber();
-  //     console.log('err:',err, ' getManyMembers:', getManyMembers);
-  //   });
-  // }
-  //
-  // getContributionForMember(e) {
-  //   e.preventDefault();
-  //   this.state.susuContract.getContributionForMember(this.state.web3.eth.accounts[0], (err, getContributionForMemberBig)=>{
-  //     let bigNumber = new BigNumber(getContributionForMemberBig);
-  //     const getContributionForMember = bigNumber.toNumber();
-  //     console.log('err:',err, ' getContributionForMember:', getContributionForMember);
-  //   });
-  // }
-  //
-  // getMemberAtIndex0(e) {
-  //   e.preventDefault();
-  //   this.state.susuContract.getMemberAtIndex(0, (err, memberAddress)=>{
-  //     console.log('err:',err, ' memberAddress0:', memberAddress);
-  //   });
-  // }
-  //
-  // getMemberAtIndex1(e) {
-  //   e.preventDefault();
-  //   this.state.susuContract.getMemberAtIndex(1, (err, memberAddress)=>{
-  //     console.log('err:',err, ' memberAddress1:', memberAddress);
-  //   });
-  // }
-  //
-  // owner(e) {
-  //   e.preventDefault();
-  //   const options = {from: this.state.web3.eth.accounts[0]};
-  //   this.state.susuContract.owner(options, (err, owner)=>{
-  //     console.log('err:',err, ' owner:', owner, ' =?me', (owner===this.state.web3.eth.accounts[0]));
-  //   });
-  // }
-  //
-  // amIOwner(e) {
-  //   e.preventDefault();
-  //   const options = {from: this.state.web3.eth.accounts[0]};
-  //   this.state.susuContract.amIOwner(options, (err, amIOwner)=>{
-  //     console.log('err:',err, ' amIOwner:', amIOwner);
-  //   });
-  // }
-  //
-  // joinGroup(e) {
-  //   e.preventDefault();
-  //   const options = {from: this.state.web3.eth.accounts[0], gas: 2000000};
-  //   this.state.susuContract.joinGroup(options, (err, resp)=>{console.log('err:',err, ' resp:', resp);});
-  // }
+  getManyMembers(e) {
+    e.preventDefault();
+    this.state.susuContract.getManyMembers((err, getManyMembersBig)=>{
+      let bigNumber = new BigNumber(getManyMembersBig);
+      const getManyMembers = bigNumber.toNumber();
+      console.log('err:',err, ' getManyMembers:', getManyMembers);
+    });
+  }
+
+  contribute(e) {
+    e.preventDefault();
+
+    this.state.web3.eth.sendTransaction(
+      {
+        from: this.state.web3.eth.accounts[0],
+        to: this.state.susuContract.address,
+        value:this.state.contribAmtWei,
+        gas:2000000
+      },
+      (err)=>{
+        if(typeof err === 'undefined' || !err) {
+          console.log('contribute done');
+        } else {
+          console.error(err);
+        }
+      });
+  }
+
+  contribAmtWei(e) {
+    e.preventDefault();
+    this.state.susuContract.contribAmtWei((err, contribAmtWeiBig)=>{
+      let bigNumber = new BigNumber(contribAmtWeiBig);
+      const contribAmtWei = bigNumber.toNumber();
+      console.log('err:',err, ' contribAmtWei:', contribAmtWei);
+      this.setState({contribAmtWei: contribAmtWei});
+    });
+  }
+
+  getContributionForMember(e) {
+    e.preventDefault();
+    this.state.susuContract.getContributionForMember(this.state.web3.eth.accounts[0], (err, getContributionForMemberBig)=>{
+      let bigNumber = new BigNumber(getContributionForMemberBig);
+      const getContributionForMember = this.state.web3.fromWei(bigNumber, 'ether').toNumber();
+      console.log('err:',err, ' getContributionForMember:', getContributionForMember);
+    });
+  }
+
+  getMemberAtIndex0(e) {
+    e.preventDefault();
+    this.state.susuContract.getMemberAtIndex(0, (err, memberAddress)=>{
+      console.log('err:',err, ' memberAddress0:', memberAddress);
+    });
+  }
+
+  getMemberAtIndex1(e) {
+    e.preventDefault();
+    this.state.susuContract.getMemberAtIndex(1, (err, memberAddress)=>{
+      console.log('err:',err, ' memberAddress1:', memberAddress);
+    });
+  }
+
+  owner(e) {
+    e.preventDefault();
+    const options = {from: this.state.web3.eth.accounts[0]};
+    this.state.susuContract.owner(options, (err, owner)=>{
+      console.log('err:',err, ' owner:', owner, ' =?me', (owner===this.state.web3.eth.accounts[0]));
+    });
+  }
+
+  amIOwner(e) {
+    e.preventDefault();
+    const options = {from: this.state.web3.eth.accounts[0]};
+    this.state.susuContract.amIOwner(options, (err, amIOwner)=>{
+      console.log('err:',err, ' amIOwner:', amIOwner);
+    });
+  }
+
+  joinGroup(e) {
+    e.preventDefault();
+    const options = {from: this.state.web3.eth.accounts[0], gas: 2000000};
+    this.state.susuContract.joinGroup(options, (err, resp)=>{console.log('err:',err, ' resp:', resp);});
+  }
 
   clickCreate(e) {
     e.preventDefault();
