@@ -21,7 +21,7 @@ contract SusuParent {
             SusuDataStore susuDataStore = new SusuDataStore(_groupSize, _groupName, _contribAmtWei);
             Susu susu = new Susu(susuDataStore, msg.sender);
             registry.put(_key, susu);
-//            susu.transferOwnership(msg.sender);
+            susu.transferOwnership(msg.sender);
         }
     }
 
