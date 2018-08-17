@@ -8,7 +8,7 @@ contract Susu is Ownable {
 
     SusuDataStore public susuDataStore;
     uint8 constant public MAX_MEMBERS = 5;
-    string constant public version = '0.0.12';
+    string constant public version = '0.0.13';
 
     constructor(address _susuDataStoreAddress, address _newOwner) public {
         susuDataStore = SusuDataStore(_susuDataStoreAddress);
@@ -16,12 +16,20 @@ contract Susu is Ownable {
         susuDataStore.addMember(_newOwner);
     }
 
-    function groupName() public view returns(string) {
+    function groupName() external view returns(string) {
         return susuDataStore.groupName();
     }
 
-    function contribAmtWei() public view returns(uint256) {
+    function contribAmtWei() external view returns(uint256) {
         return susuDataStore.contribAmtWei();
+    }
+
+    function memberIdxToPayNext() external view returns(uint) {
+        return susuDataStore.memberIdxToPayNext();
+    }
+
+    function groupSize() external view returns(uint8) {
+        return susuDataStore.groupSize();
     }
 
 //    function pullPayOut() public payable {

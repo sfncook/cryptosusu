@@ -47,7 +47,7 @@ class ActionButtons extends Component {
         from:this.props.myAddress,
         to:this.props.susuContract.address,
         value:this.props.web3.toWei(this.props.contribAmt, "ether"),
-        gas:60000
+        gas:200000
       },
       (err)=>{
         this.setState({isLoading:false});
@@ -81,7 +81,7 @@ class ActionButtons extends Component {
     e.preventDefault();
     this.setState({isLoading:true});
     this.props.susuContract.joinGroup(
-      {from:this.props.myAddress, gas:60000},
+      {from:this.props.myAddress, gas:200000},
       (err)=>{
         this.setState({isLoading:false});
         if(typeof err === 'undefined' || !err) {
