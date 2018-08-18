@@ -34,7 +34,7 @@ contract SusuParent {
         address susuAddressOrig = registry.get(_key);
         Susu susu = Susu(susuAddressOrig);
         Susu susuNew = new Susu(susu.susuDataStore(), susu.owner());
-        susu.transferValue(susuNew);
+        susu.kill(susuNew);
         registry.put(_key, susuNew);
     }
 

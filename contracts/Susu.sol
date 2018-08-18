@@ -10,7 +10,7 @@ contract Susu is Ownable {
 
     SusuDataStore public susuDataStore;
     uint8 constant public MAX_MEMBERS = 5;
-    string constant public version = '0.0.21';
+    string constant public version = '0.0.32';
 
     constructor(address _susuDataStoreAddress, address _newOwner) public {
         susuDataStore = SusuDataStore(_susuDataStoreAddress);
@@ -113,10 +113,8 @@ contract Susu is Ownable {
     }
 
     // onlyOwner?
-    function transferValue(address _susuNew) external returns(bool){
-//        TODO: selfdestruct(_upgradedSusu);
-//        _susuNew.transfer(address(this).balance);
-        return _susuNew.send(1);
+    function kill(address _newSusu) public payable {
+        selfdestruct(_newSusu);
     }
 
 }
