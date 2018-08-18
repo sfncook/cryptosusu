@@ -2,125 +2,119 @@ pragma solidity ^0.4.22;
 
 import { Ownable } from "zeppelin-solidity/contracts/ownership/Ownable.sol";
 import { SafeMath } from "zeppelin-solidity/contracts/math/SafeMath.sol";
+import "./SusuDataStore.sol";
 
-// API Design here: https://docs.google.com/presentation/d/12qfLPD88TTfvQxWLRTu5boEav8-JdRf3IjpS5WNDTvs/edit#slide=id.g3cb5a7885c_0_11
-// Design Requirements here: https://docs.google.com/document/d/1myfOSSwCPx16uUMSLbtf5RvfLFN97vmkKxjFWIvAaEM/edit
 contract Susu is Ownable {
 
     using SafeMath for uint;
 
-    string public groupName;
-    uint256 public contribAmtWei;
-    uint8 public groupSize;
-    address[] public members;
-    uint public memberIdxToPayNext;
-    uint8 public maxMembers;
-    mapping(address => uint) private currentContributions;
+    SusuDataStore public susuDataStore;
+    uint8 constant public MAX_MEMBERS = 5;
+    string constant public version = '0.0.32';
 
-    constructor(uint8 _groupSize, string _groupName, uint256 _contribAmtWei) public {
-        // Max number of members is 100. Arbitrary but should be smaller than max of uint8
-        maxMembers = 100;
-        require(_groupSize < maxMembers);
-        groupName = _groupName;
-        contribAmtWei = _contribAmtWei;
-        groupSize = _groupSize;
-        members.push(owner);
-        memberIdxToPayNext = 0;
+    constructor(address _susuDataStoreAddress, address _newOwner) public {
+        susuDataStore = SusuDataStore(_susuDataStoreAddress);
+        require(susuDataStore.groupSize() <= MAX_MEMBERS);
+        if(susuDataStore.getManyMembers()==0) {
+            susuDataStore.addMember(_newOwner);
+        }
+        transferOwnership(_newOwner);
     }
 
-    function payOut() public payable onlyOwner {
-        if(everyonePaid()) {
-            resetBalances();
-            paySusu();
-            iterateMemberToPayNext();
-        }
+    function groupName() external view returns(string) {
+        return susuDataStore.groupName();
+    }
+
+    function contribAmtWei() public view returns(uint256) {
+        return susuDataStore.contribAmtWei();
+    }
+
+    function memberIdxToPayNext() public view returns(uint) {
+        return susuDataStore.memberIdxToPayNext();
+    }
+
+    function groupSize() public view returns(uint8) {
+        return susuDataStore.groupSize();
     }
 
     function pullPayOut() public payable {
-        require(msg.sender == members[memberIdxToPayNext]);
+        // TODO: require group is full
+        // TODO: require everyone has paid
+        require(msg.sender == getMemberAtIndex(memberIdxToPayNext()));
         resetBalances();
         iterateMemberToPayNext();
-        msg.sender.transfer(members.length * contribAmtWei);
+        msg.sender.transfer(getManyMembers() * contribAmtWei());
     }
 
-    function everyonePaid() private view returns (bool) {
-        for (uint i = 0; i < members.length ; i++)
-        {
-            if(currentContributions[members[i]] != contribAmtWei)
-                return false;
-        }
-        return true;
-    }
+//    function everyonePaid() private view returns (bool) {
+//        for (uint i = 0; i < members.length ; i++)
+//        {
+//            if(currentContributions[members[i]] != contribAmtWei)
+//                return false;
+//        }
+//        return true;
+//    }
 
     function resetBalances() private {
-        for (uint i = 0; i < members.length ; i++)
+        for (uint i = 0; i < susuDataStore.getManyMembers(); i++)
         {
-            currentContributions[members[i]] = 0;    
+            address member = susuDataStore.getMemberAtIndex(i);
+            susuDataStore.setContributionForMember(member, 0);
         }
     }
 
     function iterateMemberToPayNext() private {
-        for (uint i = 0; i < members.length ; i++)
-        {
-            if(members[i] == members[memberIdxToPayNext]) {
-                if(i < members.length - 1) {
-                    memberIdxToPayNext = i.add(1);
-                    return;
-                }
-
-                memberIdxToPayNext = 0;
-                return;
-            }
+        uint _memberIdxToPayNext = susuDataStore.memberIdxToPayNext();
+        _memberIdxToPayNext++;
+        uint manyMembers = susuDataStore.getManyMembers();
+        if(_memberIdxToPayNext == manyMembers) {
+            _memberIdxToPayNext = 0;
         }
+        susuDataStore.setMemberIdxToPayNext(_memberIdxToPayNext);
+        // TODO: Why was there a for-loop here?  Check SusuOrig.  Maybe it is needed?
     }
 
-    function paySusu() private {
-        members[memberIdxToPayNext].transfer(members.length * contribAmtWei);
+    function getMemberAtIndex(uint _index) public view returns(address) {
+        return susuDataStore.getMemberAtIndex(_index);
     }
 
-    function getMemberAtIndex(uint8 index) public view returns(address) {
-        return members[index];
-    }
-
-    function getContributionForMember(address _member) public view returns(uint256) {
-        return currentContributions[_member];
-    }
-
-    function amIOwner() public view returns(bool) {
+    function amIOwner() external view returns(bool) {
         return (msg.sender == owner);
     }
 
     function getManyMembers() public view returns(uint) {
-        return members.length;
+        return susuDataStore.getManyMembers();
     }
-    
-    function joinGroup() public {
+
+    function joinGroup() external {
         require(!isRecipient(msg.sender));
-        members.push(msg.sender);
-    }
-
-    function contribute() public payable {
-        require(msg.value == contribAmtWei);
-        require(isRecipient(msg.sender));
-
-        TrackPayment();
-    }
-
-    function TrackPayment() private {
-        require(currentContributions[msg.sender] == 0);
-        currentContributions[msg.sender] = msg.value;
+        susuDataStore.addMember(msg.sender);
     }
 
     function isRecipient(address addr) private view returns (bool) {
-        for (uint i = 0; i < members.length ; i++)
+        uint manyMembers = getManyMembers();
+        for (uint8 i = 0; i < manyMembers ; i++)
         {
-            if(members[i] == addr)
+            if(getMemberAtIndex(i) == addr)
                 return true;
         }
         return false;
     }
 
-    function () external payable {
-        contribute();
+    function getContributionForMember(address _member) external view returns(uint256) {
+        return susuDataStore.getContributionForMember(_member);
     }
+
+    function () external payable {
+//        require(msg.value == susuDataStore.contribAmtWei());
+        require(isRecipient(msg.sender));
+        require(susuDataStore.getContributionForMember(msg.sender) == 0);
+        susuDataStore.setContributionForMember(msg.sender, msg.value);
+    }
+
+    // onlyOwner?
+    function kill(address _newSusu) public payable {
+        selfdestruct(_newSusu);
+    }
+
 }

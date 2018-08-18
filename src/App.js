@@ -21,7 +21,7 @@ class App extends Component {
         <Router>
           <div>
             <Route exact path="/" component={DeployPage}/>
-            <Route path="/:contractAddress" component={GroupPage}/>
+            <Route path="/:groupName" component={GroupPage}/>
           </div>
         </Router>
 

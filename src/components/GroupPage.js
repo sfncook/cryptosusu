@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import SusuContract from '../../build/contracts/Susu.json'
+// import SusuOrigContract from '../../build/contracts/SusuOrig.json'
 import getWeb3 from '../utils/getWeb3'
 import {BigNumber} from 'bignumber.js';
 
@@ -12,6 +12,8 @@ import PartnerRow from "./PartnerRow";
 import GroupInfo from "./GroupInfo";
 import ActionButtons from "./ActionButtons";
 import PartnerRowEmpty from "./PartnerRowEmpty";
+import SusuParentContract from "../../build/contracts/SusuParent";
+import SusuContract from "../../build/contracts/Susu";
 
 class GroupPage extends Component {
 
@@ -21,17 +23,20 @@ class GroupPage extends Component {
     this.state = {
       web3: null,
       susuContract: null,
+      susuParentContract: null,
       myAddress: '',
       contribAmt: 0,
-      groupName: '---',
       payoutFrequency: 'monthly',
       manyMembers: 0,
       groupSize: 0,
       ownerAddress: '',
       partnerObjects: [],
-      contractAddress: props.match.params.contractAddress,
+      groupName: props.match.params.groupName,
       myContrib:0.0,
       memberAddrToPayNext:0,
+      susuContractAddress: '',
+      susuContractVersion: '',
+      susuContractBalance: 0,
     }
   }
 
@@ -51,14 +56,28 @@ class GroupPage extends Component {
   }
 
   instantiateContract() {
-    const susuContract = this.state.web3.eth.contract(SusuContract.abi).at(this.state.contractAddress);
-    this.setState({susuContract:susuContract});
+    const contract = require("truffle-contract");
+    const susuParentContract = contract(SusuParentContract);
+    const provider = new this.state.web3.providers.HttpProvider("http://127.0.0.1:7545");
+    susuParentContract.setProvider(provider);
+    this.setState({susuParentContract: susuParentContract});
 
+    this.state.susuParentContract.deployed().then((instance)=>{
+      return instance.getSusu.call(this.state.groupName);
+    }).then((susuContractAddress)=>{
+      const susuContract = this.state.web3.eth.contract(SusuContract.abi).at(susuContractAddress);
+      this.setState({susuContract: susuContract});
+      this.setState({susuContractAddress: susuContractAddress});
+      this.initState();
+    });
+  }
+
+  initState() {
     let _this = this;
     this.state.web3.eth.getAccounts(function(error, accounts) {
       const myAddress = accounts[0];
       _this.setState({myAddress: myAddress});
-      susuContract.getContributionForMember(myAddress, (err, contribAmtWei)=>{
+      _this.state.susuContract.getContributionForMember(myAddress, (err, contribAmtWei)=>{
         let bigNumber = new BigNumber(contribAmtWei);
         const contribAmt = _this.state.web3.fromWei(bigNumber, 'ether').toNumber();
         _this.setState({myContrib:contribAmt});
@@ -72,35 +91,43 @@ class GroupPage extends Component {
       this.setState({ partnerObjects: partnerObjects });
     }
 
-    susuContract.groupName((err, groupName)=>{
+    this.state.web3.eth.getBalance(this.state.susuContractAddress, (err, balanceBig)=>{
+      let bigNumber = new BigNumber(balanceBig);
+      const susuContractBalance = _this.state.web3.fromWei(bigNumber, 'ether').toNumber();
+      this.setState({susuContractBalance:susuContractBalance});
+    });
+
+    this.state.susuContract.groupName((err, groupName)=>{
       this.setState({groupName:groupName});
     });
 
-    susuContract.memberIdxToPayNext((err, memberIdxToPayNextBig)=>{
+    this.state.susuContract.version((err, susuContractVersion)=>{
+      this.setState({susuContractVersion:susuContractVersion});
+    });
+
+    this.state.susuContract.memberIdxToPayNext((err, memberIdxToPayNextBig)=>{
       let bigNumber = new BigNumber(memberIdxToPayNextBig);
       const memberIdxToPayNext = bigNumber.toNumber();
-      console.log('memberIdxToPayNext:',memberIdxToPayNext);
 
-      susuContract.getMemberAtIndex(memberIdxToPayNext, (err, memberAddrToPayNext)=>{
-        console.log('memberAddrToPayNext:',memberAddrToPayNext);
+      this.state.susuContract.getMemberAtIndex(memberIdxToPayNext, (err, memberAddrToPayNext)=>{
         this.setState({memberAddrToPayNext:memberAddrToPayNext});
       });
     });
 
-    susuContract.contribAmtWei((err, contribAmtWei)=>{
+    this.state.susuContract.contribAmtWei((err, contribAmtWei)=>{
       let bigNumber = new BigNumber(contribAmtWei);
       const contribAmt = this.state.web3.fromWei(bigNumber, 'ether').toNumber();
       this.setState({contribAmt:contribAmt});
     });
 
-    susuContract.owner((err, ownerAddress)=>{
+    this.state.susuContract.owner((err, ownerAddress)=>{
       this.setState({ownerAddress:ownerAddress});
-      susuContract.getManyMembers((err, manyMembersBig)=>{
+      this.state.susuContract.getManyMembers((err, manyMembersBig)=>{
         let bigNumber = new BigNumber(manyMembersBig);
         const manyMembers = bigNumber.toNumber();
         this.setState({manyMembers:manyMembers});
 
-        susuContract.groupSize((err, groupSizeBig)=>{
+        this.state.susuContract.groupSize((err, groupSizeBig)=>{
           let bigNumber = new BigNumber(groupSizeBig);
           const groupSize = bigNumber.toNumber();
           this.setState({groupSize:groupSize});
@@ -123,12 +150,21 @@ class GroupPage extends Component {
     let isGroupTerminated = false;
     let isMember = this.isMember();
     let isMemberToPayNext = this.state.memberAddrToPayNext===this.state.myAddress;
+    let contractAddress = this.state.susuContractAddress;
+    let contractVersion = this.state.susuContractVersion;
+    let contractBalance = this.state.susuContractBalance;
 
     return (
       <main className="container">
         <div className="pure-g">
           <div className="pure-u-1-1" style={{paddingTop:'15px'}}>
-            <GroupInfo groupName={this.state.groupName} contribAmt={this.state.contribAmt}/>
+            <GroupInfo
+              groupName={this.state.groupName}
+              contribAmt={this.state.contribAmt}
+              contractAddress={contractAddress}
+              contractVersion={contractVersion}
+              contractBalance={contractBalance}
+            />
             <table className="memberTable">
               <tbody>
               {this.createPartnerRows()}
@@ -143,12 +179,14 @@ class GroupPage extends Component {
             isGroupTerminated={isGroupTerminated}
             isMember={isMember}
             susuContract={this.state.susuContract}
+            susuParentContract={this.state.susuParentContract}
             myAddress={this.state.myAddress}
             web3={this.state.web3}
             contribAmt={this.state.contribAmt}
             myContrib={this.state.myContrib}
             isReadyToPayout={this.isReadyToPayout()}
             isMemberToPayNext={isMemberToPayNext}
+            groupName={this.state.groupName}
           />
 
         </div>

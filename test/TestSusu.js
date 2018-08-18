@@ -1,4 +1,4 @@
-const Susu = artifacts.require('./Susu.sol')
+const Susu = artifacts.require('./SusuOrig.sol')
 
 contract('Susu', function ([owner, donor]) {
     let susu
