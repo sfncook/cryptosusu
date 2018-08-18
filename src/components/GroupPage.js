@@ -64,7 +64,6 @@ class GroupPage extends Component {
     this.state.susuParentContract.deployed().then((instance)=>{
       return instance.getSusu.call(this.state.groupName);
     }).then((susuContractAddress)=>{
-      console.log('susuContractAddress:',susuContractAddress);
       const susuContract = this.state.web3.eth.contract(SusuContract.abi).at(susuContractAddress);
       this.setState({susuContract: susuContract});
       this.setState({susuContractAddress: susuContractAddress});
@@ -166,12 +165,14 @@ class GroupPage extends Component {
             isGroupTerminated={isGroupTerminated}
             isMember={isMember}
             susuContract={this.state.susuContract}
+            susuParentContract={this.state.susuParentContract}
             myAddress={this.state.myAddress}
             web3={this.state.web3}
             contribAmt={this.state.contribAmt}
             myContrib={this.state.myContrib}
             isReadyToPayout={this.isReadyToPayout()}
             isMemberToPayNext={isMemberToPayNext}
+            groupName={this.state.groupName}
           />
 
         </div>

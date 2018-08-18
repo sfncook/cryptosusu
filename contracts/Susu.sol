@@ -10,12 +10,13 @@ contract Susu is Ownable {
 
     SusuDataStore public susuDataStore;
     uint8 constant public MAX_MEMBERS = 5;
-    string constant public version = '0.0.14';
+    string constant public version = '0.0.19';
 
     constructor(address _susuDataStoreAddress, address _newOwner) public {
         susuDataStore = SusuDataStore(_susuDataStoreAddress);
         require(susuDataStore.groupSize() <= MAX_MEMBERS);
         susuDataStore.addMember(_newOwner);
+        transferOwnership(_newOwner);
     }
 
     function groupName() external view returns(string) {
@@ -103,17 +104,19 @@ contract Susu is Ownable {
     }
 
     function () external payable {
-//        require(msg.value == susuDataStore.contribAmtWei());
+        require(msg.value == susuDataStore.contribAmtWei());
         require(isRecipient(msg.sender));
         require(susuDataStore.getContributionForMember(msg.sender) == 0);
         susuDataStore.setContributionForMember(msg.sender, msg.value);
+//        address(susuDataStore).transfer(1);
     }
 
     // onlyOwner?
-//    function kill() public pure {
+    function transferValue(address _susuNew) external {
 //        ???=> var tokenBalance = susuDataStore.balanceOf(this);
 //        ???=> tokenLedger.transfer(_upgradedSusu, tokenBalance);
 //        ???=> selfdestruct(_upgradedSusu);
-//    }
+        _susuNew.transfer(address(this).balance);
+    }
 
 }

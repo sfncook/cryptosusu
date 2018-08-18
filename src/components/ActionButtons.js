@@ -17,6 +17,7 @@ class ActionButtons extends Component {
     let contributeBtn = <button key='contributeBtn' onClick={(e)=>{this.clickContribute(e)}} className={iOwe ? 'btn-contribute' : 'btn-contribute btn-disabled'} type="button" disabled={!iOwe}>Pay Your Share</button>;
     let pullPayOutBtn = <button key='pullPayOutBtn' onClick={(e)=>{this.clickPullPayOut(e)}} className={this.props.isReadyToPayout ? 'btn-pay' : 'btn-pay btn-disabled'} disabled={!this.props.isReadyToPayout} type="button">Pull Pay Out</button>;
     let joinBtn = <button key='joinBtn' onClick={(e)=>{this.clickJoin(e)}} className="btn-join" type="button">Join</button>;
+    let upgradeBtn = <button key='upgradeBtn' onClick={(e)=>{this.clickUpgrade(e)}} className="btn-join" type="button">Upgrade Susu Contract</button>;
 
     if(!this.props.isGroupFull && !this.props.isMember){
       btns.push(joinBtn);
@@ -26,6 +27,9 @@ class ActionButtons extends Component {
       btns.push(contributeBtn);
       if(this.props.isMemberToPayNext) {
         btns.push(pullPayOutBtn);
+      }
+      if(this.props.isOwner) {
+        btns.push(upgradeBtn);
       }
     }
 
@@ -47,7 +51,7 @@ class ActionButtons extends Component {
         from:this.props.myAddress,
         to:this.props.susuContract.address,
         value:this.props.web3.toWei(this.props.contribAmt, "ether"),
-        gas:200000
+        gas:2000000
       },
       (err)=>{
         this.setState({isLoading:false});
@@ -93,6 +97,17 @@ class ActionButtons extends Component {
       }
     );
   }
+
+  clickUpgrade(e) {
+    e.preventDefault();
+    this.setState({isLoading:true});
+    this.props.susuParentContract.deployed().then((instance)=>{
+      const options = { from: this.props.myAddress, gas: 2000000 };
+      return instance.upgradeSusu(this.props.groupName, options);
+    }).then((a,b)=>{
+      location.reload();
+    });
+  }
 }
 
 ActionButtons.defaultProps = {
@@ -101,12 +116,14 @@ ActionButtons.defaultProps = {
   isGroupTerminated: false,
   isMember: false,
   susuContract: null,
+  susuParentContract: null,
   myAddress: '',
   web3:null,
   contribAmt:0.0,
   myContrib:0.0,
   isReadyToPayout:false,
   isMemberToPayNext:false,
+  groupName: '',
 };
 
 export default ActionButtons

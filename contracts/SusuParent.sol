@@ -9,6 +9,7 @@ import "./IRegistry.sol";
 contract SusuParent {
 
     IRegistry public registry;
+    string constant public version = '0.0.2';
 
     constructor(address _registry) public {
         registry = IRegistry(_registry);
@@ -21,7 +22,6 @@ contract SusuParent {
             SusuDataStore susuDataStore = new SusuDataStore(_groupSize, _groupName, _contribAmtWei);
             Susu susu = new Susu(susuDataStore, msg.sender);
             registry.put(_key, susu);
-            susu.transferOwnership(msg.sender);
         }
     }
 
@@ -33,8 +33,8 @@ contract SusuParent {
     function upgradeSusu(bytes32 _key) external {
         address susuAddressOrig = registry.get(_key);
         Susu susu = Susu(susuAddressOrig);
-        Susu susuNew = new Susu(susu.susuDataStore(), 0x0);
-//        susu.kill(); // Transfer value?
+        Susu susuNew = new Susu(susu.susuDataStore(), susu.owner());
+//        susu.transferValue(susuNew);
         registry.put(_key, susuNew);
     }
 
