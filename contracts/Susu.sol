@@ -1,14 +1,16 @@
 pragma solidity ^0.4.22;
 
 import { Ownable } from "zeppelin-solidity/contracts/ownership/Ownable.sol";
-//import { SafeMath } from "zeppelin-solidity/contracts/math/SafeMath.sol";
+import { SafeMath } from "zeppelin-solidity/contracts/math/SafeMath.sol";
 import "./SusuDataStore.sol";
 
 contract Susu is Ownable {
 
+    using SafeMath for uint;
+
     SusuDataStore public susuDataStore;
     uint8 constant public MAX_MEMBERS = 5;
-    string constant public version = '0.0.13';
+    string constant public version = '0.0.14';
 
     constructor(address _susuDataStoreAddress, address _newOwner) public {
         susuDataStore = SusuDataStore(_susuDataStoreAddress);
@@ -20,27 +22,27 @@ contract Susu is Ownable {
         return susuDataStore.groupName();
     }
 
-    function contribAmtWei() external view returns(uint256) {
+    function contribAmtWei() public view returns(uint256) {
         return susuDataStore.contribAmtWei();
     }
 
-    function memberIdxToPayNext() external view returns(uint) {
+    function memberIdxToPayNext() public view returns(uint) {
         return susuDataStore.memberIdxToPayNext();
     }
 
-    function groupSize() external view returns(uint8) {
+    function groupSize() public view returns(uint8) {
         return susuDataStore.groupSize();
     }
 
-//    function pullPayOut() public payable {
-//        // TODO: require group is full
-//        // TODO: require everyone has paid
-//        require(msg.sender == members[memberIdxToPayNext]);
-//        resetBalances();
-//        iterateMemberToPayNext();
-//        msg.sender.transfer(members.length * contribAmtWei);
-//    }
-//
+    function pullPayOut() public payable {
+        // TODO: require group is full
+        // TODO: require everyone has paid
+        require(msg.sender == getMemberAtIndex(memberIdxToPayNext()));
+        resetBalances();
+        iterateMemberToPayNext();
+        msg.sender.transfer(getManyMembers() * contribAmtWei());
+    }
+
 //    function everyonePaid() private view returns (bool) {
 //        for (uint i = 0; i < members.length ; i++)
 //        {
@@ -49,30 +51,27 @@ contract Susu is Ownable {
 //        }
 //        return true;
 //    }
-//
-//    function resetBalances() private {
-//        for (uint i = 0; i < members.length ; i++)
-//        {
-//            currentContributions[members[i]] = 0;
-//        }
-//    }
-//
-//    function iterateMemberToPayNext() private {
-//        for (uint i = 0; i < members.length ; i++)
-//        {
-//            if(members[i] == members[memberIdxToPayNext]) {
-//                if(i < members.length - 1) {
-//                    memberIdxToPayNext = i.add(1);
-//                    return;
-//                }
-//
-//                memberIdxToPayNext = 0;
-//                return;
-//            }
-//        }
-//    }
 
-    function getMemberAtIndex(uint8 _index) public view returns(address) {
+    function resetBalances() private {
+        for (uint i = 0; i < susuDataStore.getManyMembers(); i++)
+        {
+            address member = susuDataStore.getMemberAtIndex(i);
+            susuDataStore.setContributionForMember(member, 0);
+        }
+    }
+
+    function iterateMemberToPayNext() private {
+        uint _memberIdxToPayNext = susuDataStore.memberIdxToPayNext();
+        _memberIdxToPayNext++;
+        uint manyMembers = susuDataStore.getManyMembers();
+        if(_memberIdxToPayNext == manyMembers) {
+            _memberIdxToPayNext = 0;
+        }
+        susuDataStore.setMemberIdxToPayNext(_memberIdxToPayNext);
+        // TODO: Why was there a for-loop here?  Check SusuOrig.  Maybe it is needed?
+    }
+
+    function getMemberAtIndex(uint _index) public view returns(address) {
         return susuDataStore.getMemberAtIndex(_index);
     }
 

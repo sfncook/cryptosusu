@@ -16,6 +16,14 @@ class GroupInfo extends Component {
             <th>Contribution Amt (eth):</th>
             <td>{this.props.contribAmt}</td>
           </tr>
+          <tr>
+            <th>Contract Address:</th>
+            <td>{this.props.contractAddress}</td>
+          </tr>
+          <tr>
+            <th>Contract Version:</th>
+            <td>{this.props.contractVersion}</td>
+          </tr>
         </tbody>
       </table>
     );
@@ -26,6 +34,8 @@ class GroupInfo extends Component {
 GroupInfo.defaultProps = {
   groupName: 'groupName not set',
   contribAmt: -1,
+  contractAddress: 'contractAddress not set',
+  contractVersion: 'contractVersion not set',
 };
 
 export default GroupInfo

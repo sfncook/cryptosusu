@@ -22,7 +22,7 @@ contract SusuDataStore {
         return members.length;
     }
 
-    function getMemberAtIndex(uint8 _index) external view returns(address) {
+    function getMemberAtIndex(uint _index) external view returns(address) {
         return members[_index];
     }
 
@@ -32,6 +32,10 @@ contract SusuDataStore {
 
     function setContributionForMember(address _member, uint256 _contribAmtWei) external {
         currentContributions[_member] = _contribAmtWei;
+    }
+
+    function setMemberIdxToPayNext(uint _memberIdxToPayNext) external {
+        memberIdxToPayNext = _memberIdxToPayNext;
     }
 
 }

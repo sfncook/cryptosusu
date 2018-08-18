@@ -31,10 +31,11 @@ class GroupPage extends Component {
       groupSize: 0,
       ownerAddress: '',
       partnerObjects: [],
-      contractAddress: props.match.params.contractAddress,
       groupName: props.match.params.groupName,
       myContrib:0.0,
       memberAddrToPayNext:0,
+      susuContractAddress: '',
+      susuContractVersion: '',
     }
   }
 
@@ -66,6 +67,7 @@ class GroupPage extends Component {
       console.log('susuContractAddress:',susuContractAddress);
       const susuContract = this.state.web3.eth.contract(SusuContract.abi).at(susuContractAddress);
       this.setState({susuContract: susuContract});
+      this.setState({susuContractAddress: susuContractAddress});
       this.initState();
     });
   }
@@ -91,6 +93,10 @@ class GroupPage extends Component {
 
     this.state.susuContract.groupName((err, groupName)=>{
       this.setState({groupName:groupName});
+    });
+
+    this.state.susuContract.version((err, susuContractVersion)=>{
+      this.setState({susuContractVersion:susuContractVersion});
     });
 
     this.state.susuContract.memberIdxToPayNext((err, memberIdxToPayNextBig)=>{
@@ -138,12 +144,14 @@ class GroupPage extends Component {
     let isGroupTerminated = false;
     let isMember = this.isMember();
     let isMemberToPayNext = this.state.memberAddrToPayNext===this.state.myAddress;
+    let contractAddress = this.state.susuContractAddress;
+    let contractVersion = this.state.susuContractVersion;
 
     return (
       <main className="container">
         <div className="pure-g">
           <div className="pure-u-1-1" style={{paddingTop:'15px'}}>
-            <GroupInfo groupName={this.state.groupName} contribAmt={this.state.contribAmt}/>
+            <GroupInfo groupName={this.state.groupName} contribAmt={this.state.contribAmt} contractAddress={contractAddress} contractVersion={contractVersion}/>
             <table className="memberTable">
               <tbody>
               {this.createPartnerRows()}
