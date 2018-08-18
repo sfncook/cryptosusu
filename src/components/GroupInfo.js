@@ -24,6 +24,10 @@ class GroupInfo extends Component {
             <th>Contract Version:</th>
             <td>{this.props.contractVersion}</td>
           </tr>
+          <tr>
+            <th>Contract Balance:</th>
+            <td>{this.props.contractBalance}</td>
+          </tr>
         </tbody>
       </table>
     );
@@ -36,6 +40,7 @@ GroupInfo.defaultProps = {
   contribAmt: -1,
   contractAddress: 'contractAddress not set',
   contractVersion: 'contractVersion not set',
+  contractBalance: 0,
 };
 
 export default GroupInfo

@@ -36,6 +36,7 @@ class GroupPage extends Component {
       memberAddrToPayNext:0,
       susuContractAddress: '',
       susuContractVersion: '',
+      susuContractBalance: 0,
     }
   }
 
@@ -89,6 +90,12 @@ class GroupPage extends Component {
       partnerObjects.push({});
       this.setState({ partnerObjects: partnerObjects });
     }
+
+    this.state.web3.eth.getBalance(this.state.susuContractAddress, (err, balanceBig)=>{
+      let bigNumber = new BigNumber(balanceBig);
+      const susuContractBalance = _this.state.web3.fromWei(bigNumber, 'ether').toNumber();
+      this.setState({susuContractBalance:susuContractBalance});
+    });
 
     this.state.susuContract.groupName((err, groupName)=>{
       this.setState({groupName:groupName});
@@ -145,12 +152,19 @@ class GroupPage extends Component {
     let isMemberToPayNext = this.state.memberAddrToPayNext===this.state.myAddress;
     let contractAddress = this.state.susuContractAddress;
     let contractVersion = this.state.susuContractVersion;
+    let contractBalance = this.state.susuContractBalance;
 
     return (
       <main className="container">
         <div className="pure-g">
           <div className="pure-u-1-1" style={{paddingTop:'15px'}}>
-            <GroupInfo groupName={this.state.groupName} contribAmt={this.state.contribAmt} contractAddress={contractAddress} contractVersion={contractVersion}/>
+            <GroupInfo
+              groupName={this.state.groupName}
+              contribAmt={this.state.contribAmt}
+              contractAddress={contractAddress}
+              contractVersion={contractVersion}
+              contractBalance={contractBalance}
+            />
             <table className="memberTable">
               <tbody>
               {this.createPartnerRows()}
