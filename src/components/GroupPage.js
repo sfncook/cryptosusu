@@ -60,7 +60,7 @@ class GroupPage extends Component {
       _this.setState({myAddress: myAddress});
       susuContract.getContributionForMember(myAddress, (err, contribAmtWei)=>{
         let bigNumber = new BigNumber(contribAmtWei);
-        const contribAmt = _this.state.web3.fromWei(bigNumber, 'ether').toNumber();
+        const contribAmt = _this.convertBigNumberEtherFromWei(bigNumber);
         _this.setState({myContrib:contribAmt});
       });
     });
@@ -78,18 +78,21 @@ class GroupPage extends Component {
 
     susuContract.memberIdxToPayNext((err, memberIdxToPayNextBig)=>{
       let bigNumber = new BigNumber(memberIdxToPayNextBig);
-      const memberIdxToPayNext = bigNumber.toNumber();
-      console.log('memberIdxToPayNext:',memberIdxToPayNext);
+      let memberIdxToPayNext = 0;
+      if(typeof bigNumber.toNumber==='undefined') {
+        memberIdxToPayNext = bigNumber;
+      } else {
+        memberIdxToPayNext = bigNumber.toNumber();
+      }
 
       susuContract.getMemberAtIndex(memberIdxToPayNext, (err, memberAddrToPayNext)=>{
-        console.log('memberAddrToPayNext:',memberAddrToPayNext);
         this.setState({memberAddrToPayNext:memberAddrToPayNext});
       });
     });
 
     susuContract.contribAmtWei((err, contribAmtWei)=>{
       let bigNumber = new BigNumber(contribAmtWei);
-      const contribAmt = this.state.web3.fromWei(bigNumber, 'ether').toNumber();
+      const contribAmt = this.convertBigNumberEtherFromWei(bigNumber);
       this.setState({contribAmt:contribAmt});
     });
 
@@ -97,12 +100,22 @@ class GroupPage extends Component {
       this.setState({ownerAddress:ownerAddress});
       susuContract.getManyMembers((err, manyMembersBig)=>{
         let bigNumber = new BigNumber(manyMembersBig);
-        const manyMembers = bigNumber.toNumber();
+        let manyMembers = bigNumber.toNumber();
+        if(typeof bigNumber.toNumber==='undefined') {
+          manyMembers = bigNumber;
+        } else {
+          manyMembers = bigNumber.toNumber();
+        }
         this.setState({manyMembers:manyMembers});
 
         susuContract.groupSize((err, groupSizeBig)=>{
           let bigNumber = new BigNumber(groupSizeBig);
-          const groupSize = bigNumber.toNumber();
+          let groupSize = bigNumber.toNumber();
+          if(typeof bigNumber.toNumber==='undefined') {
+            groupSize = bigNumber;
+          } else {
+            groupSize = bigNumber.toNumber();
+          }
           this.setState({groupSize:groupSize});
 
           for(var i=0; i<this.state.manyMembers; i++) {
@@ -156,6 +169,16 @@ class GroupPage extends Component {
     );
   }// render()
 
+  convertBigNumberEtherFromWei(bigNumber) {
+    let number = 0;
+    if(typeof this.state.web3.fromWei(bigNumber, 'ether').toNumber==='undefined') {
+      number = this.state.web3.fromWei(bigNumber, 'ether');
+    } else {
+      number = this.state.web3.fromWei(bigNumber, 'ether').toNumber();
+    }
+    return number;
+  }
+
   isReadyToPayout() {
     if(this.state.manyMembers===this.state.groupSize) {
       for(let partnerObj of this.state.partnerObjects) {
@@ -181,7 +204,7 @@ class GroupPage extends Component {
   setMemberContribCallback(partnerIndex){
     return (err, partnerContribWei)=>{
       let bigNumber = new BigNumber(partnerContribWei);
-      const contribAmt = this.state.web3.fromWei(bigNumber, 'ether').toNumber();
+      const contribAmt = this.convertBigNumberEtherFromWei(bigNumber);
       let partnerObjects = this.state.partnerObjects;
       partnerObjects[partnerIndex].contrib = contribAmt;
       this.setState({partnerObjects:partnerObjects});
