@@ -270,7 +270,7 @@ function runDevServer(host, port, protocol) {
     }
 
     if (isInteractive) {
-      clearConsole();
+      // clearConsole();
     }
     console.log(chalk.cyan('Starting the development server...'));
     console.log();
