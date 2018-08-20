@@ -6,3 +6,5 @@ coverageEnv
 coverage
 coverage.json
 build_webpack
+firebase-debug.log
+.firebase
